@@ -182,6 +182,7 @@ export interface SurveyResponse {
   projectId: string;
   submittedAt: string;
   answers: Record<string, any>;
+  campaignId?: string;
 }
 
 export interface ResearchReport {
@@ -203,3 +204,63 @@ export interface ResearchReport {
   }>;
   limitationsAndAssumptions: string[];
 }
+
+export interface EmailRecipient {
+  id: string;
+  email: string;
+  name?: string;
+  rowIndex?: number;
+  isValid: boolean;
+  validationError?: string;
+  isDuplicate?: boolean;
+  isOptedOut?: boolean;
+  isPreviouslyEmailed?: boolean;
+  selected: boolean;
+}
+
+export interface EmailValidationSummary {
+  totalRows: number;
+  validUniqueCount: number;
+  invalidCount: number;
+  duplicateCount: number;
+  optedOutCount: number;
+  previouslyEmailedCount: number;
+  selectedCount: number;
+}
+
+export interface EmailCampaignResultItem {
+  email: string;
+  name?: string;
+  status: 'sent' | 'failed' | 'simulated';
+  error?: string;
+  timestamp: string;
+}
+
+export interface EmailCampaign {
+  id: string;
+  surveyId: string;
+  projectId: string;
+  surveyTitle: string;
+  name: string;
+  subject: string;
+  body: string;
+  senderAccount?: string;
+  totalRecipients: number;
+  sentCount: number;
+  failedCount: number;
+  remainingQuota?: number;
+  sentAt: string;
+  results: EmailCampaignResultItem[];
+  responseCount: number;
+  responseRate: number;
+  isSimulation?: boolean;
+}
+
+export interface EmailConfig {
+  appsScriptUrl?: string;
+  senderName?: string;
+  lastQuota?: number;
+  lastQuotaCheckedAt?: string;
+  optOuts?: string[];
+}
+

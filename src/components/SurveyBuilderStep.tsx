@@ -638,6 +638,8 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
         <EmailModal
           isOpen={showEmailModal}
           onClose={() => setShowEmailModal(false)}
+          surveyId={survey.id}
+          projectId={survey.projectId}
           surveyUrl={surveyUrl}
           surveyTitle={survey.title}
         />

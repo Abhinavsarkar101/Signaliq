@@ -12,11 +12,13 @@ import { ReportsView } from './components/ReportsView';
 import { SettingsView } from './components/SettingsView';
 import { NewProjectModal } from './components/NewProjectModal';
 import { PublicSurveyView } from './components/PublicSurveyView';
+import { FeedbackExplorerView } from './components/FeedbackExplorerView';
+import { SubmissionsExplorerView } from './components/SubmissionsExplorerView';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<
-    'dashboard' | 'projects' | 'workspace' | 'surveys' | 'reports' | 'settings'
+    'dashboard' | 'projects' | 'workspace' | 'surveys' | 'reports' | 'settings' | 'feedback' | 'submissions'
   >('dashboard');
 
   const [projects, setProjects] = useState<Project[]>([]);
@@ -190,7 +192,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
       {/* Navigation Header */}
       <Navbar
         currentView={currentView}
@@ -230,6 +232,7 @@ export default function App() {
             onNewProject={() => setIsNewProjectModalOpen(true)}
             onOpenProject={handleOpenProject}
             onLoadScenario={handleLaunchScenario}
+            onNavigate={(view) => setCurrentView(view)}
           />
         )}
 
@@ -257,6 +260,25 @@ export default function App() {
             projects={projects}
             onOpenProjectWorkspace={handleOpenProject}
             onRefreshSurveys={loadData}
+            onViewSubmissions={() => setCurrentView('submissions')}
+          />
+        )}
+
+        {currentView === 'feedback' && (
+          <FeedbackExplorerView
+            projects={projects}
+            onBackToDashboard={() => setCurrentView('dashboard')}
+            onOpenProjectWorkspace={handleOpenProject}
+          />
+        )}
+
+        {currentView === 'submissions' && (
+          <SubmissionsExplorerView
+            surveys={surveys}
+            projects={projects}
+            onBackToDashboard={() => setCurrentView('dashboard')}
+            onOpenSurvey={() => setCurrentView('surveys')}
+            onOpenProjectWorkspace={handleOpenProject}
           />
         )}
 
@@ -271,12 +293,12 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200/80 py-6 text-center text-xs text-slate-400">
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 py-6 text-center text-xs text-slate-400 dark:text-slate-500 transition-colors">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p>
             SignalIQ &copy; {new Date().getFullYear()} &mdash; Customer Feedback Intelligence Platform.
           </p>
-          <div className="flex items-center space-x-4 text-slate-500">
+          <div className="flex items-center space-x-4 text-slate-500 dark:text-slate-400">
             <span>Server Gemini 3.8-Flash</span>
             <span>&bull;</span>
             <span>Persistent File Storage</span>

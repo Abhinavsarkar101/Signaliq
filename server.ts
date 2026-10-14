@@ -35,6 +35,14 @@ interface DbSchema {
   projects: any[];
   surveys: any[];
   responses: any[];
+  campaigns?: any[];
+  optOuts?: string[];
+  emailConfig?: {
+    appsScriptUrl?: string;
+    senderName?: string;
+    lastQuota?: number;
+    lastQuotaCheckedAt?: string;
+  };
 }
 
 function loadDatabase(): DbSchema {
@@ -44,7 +52,14 @@ function loadDatabase(): DbSchema {
     }
     if (fs.existsSync(DB_FILE)) {
       const content = fs.readFileSync(DB_FILE, 'utf-8');
-      return JSON.parse(content);
+      const loaded: DbSchema = JSON.parse(content);
+      loaded.campaigns = loaded.campaigns || [];
+      loaded.optOuts = loaded.optOuts || [];
+      loaded.emailConfig = loaded.emailConfig || {
+        appsScriptUrl: process.env.APPS_SCRIPT_WEBAPP_URL || '',
+        senderName: 'SignalIQ Research Team',
+      };
+      return loaded;
     }
   } catch (err) {
     console.error('Failed to load database file, using defaults:', err);
@@ -52,6 +67,12 @@ function loadDatabase(): DbSchema {
 
   // Seed default demo projects for immediate exploration
   const initialDb: DbSchema = {
+    campaigns: [],
+    optOuts: ['unsubscribed@example.com'],
+    emailConfig: {
+      appsScriptUrl: process.env.APPS_SCRIPT_WEBAPP_URL || '',
+      senderName: 'SignalIQ Research Team',
+    },
     projects: [
       {
         id: 'proj_onboarding_demo',
@@ -521,7 +542,7 @@ app.post('/api/surveys/:id/responses', (req, res) => {
     return res.status(403).json({ success: false, error: 'This survey is not currently accepting responses' });
   }
 
-  const { answers } = req.body;
+  const { answers, campaignId } = req.body;
   if (!answers || typeof answers !== 'object') {
     return res.status(400).json({ success: false, error: 'Valid survey answers are required' });
   }
@@ -544,6 +565,7 @@ app.post('/api/surveys/:id/responses', (req, res) => {
     id: `resp_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
     surveyId: survey.id,
     projectId: survey.projectId,
+    campaignId: campaignId || undefined,
     submittedAt: new Date().toISOString(),
     answers,
   };
@@ -565,6 +587,584 @@ app.post('/api/surveys/:id/responses', (req, res) => {
 app.get('/api/surveys/:id/responses', (req, res) => {
   const responses = db.responses.filter((r) => r.surveyId === req.params.id);
   res.json({ success: true, responses, count: responses.length });
+});
+
+// GET /api/responses (All Survey Submissions)
+app.get('/api/responses', (req, res) => {
+  const { surveyId, projectId } = req.query;
+  let responses = db.responses || [];
+  if (surveyId) {
+    responses = responses.filter((r) => r.surveyId === surveyId);
+  }
+  if (projectId) {
+    responses = responses.filter((r) => r.projectId === projectId);
+  }
+  const enriched = responses.map((r) => {
+    const survey = db.surveys.find((s) => s.id === r.surveyId);
+    const project = db.projects.find((p) => p.id === r.projectId);
+    return {
+      ...r,
+      surveyTitle: survey?.title || 'Targeted Survey',
+      projectName: project?.name || 'Research Project',
+      surveyQuestions: survey?.questions || [],
+    };
+  });
+  res.json({ success: true, responses: enriched, count: enriched.length });
+});
+
+// Demo feedback records helper for Onboarding Drop-off dataset
+function getDemoFeedbackRows() {
+  return [
+    { id: 'TK-101', date: '2026-09-15', segment: 'Solo Freelancer', rating: 1, sentiment: 'negative', feedbackText: 'Waited 20 minutes for the verification code email. By the time it arrived, I had moved on to test another tool.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-102', date: '2026-09-15', segment: 'Small Team (2-10)', rating: 2, sentiment: 'negative', feedbackText: 'Verification code email was routed to Spam folder in Gmail.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-103', date: '2026-09-16', segment: 'Enterprise (50+)', rating: 1, sentiment: 'negative', feedbackText: 'Corporate firewall blocked the no-reply code email. Need an option to use Google SSO instead of forced email code.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-104', date: '2026-09-16', segment: 'Solo Freelancer', rating: 2, sentiment: 'negative', feedbackText: 'I just wanted to test the product myself before introducing it to my team, but the UI blocked me until I typed 2 email addresses.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-105', date: '2026-09-17', segment: 'Small Team (2-10)', rating: 1, sentiment: 'negative', feedbackText: 'Verification token expired after 10 minutes. Had to restart signup from scratch.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-106', date: '2026-09-17', segment: 'Solo Freelancer', rating: 2, sentiment: 'negative', feedbackText: 'The Skip Invite button is almost invisible gray text on white. Thought it was mandatory.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-107', date: '2026-09-18', segment: 'Enterprise (50+)', rating: 2, sentiment: 'negative', feedbackText: 'Strict security settings prevent employees from receiving verification links. Please support Microsoft Azure AD SSO.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-108', date: '2026-09-18', segment: 'Solo Freelancer', rating: 1, sentiment: 'negative', feedbackText: 'Verification code arrived after 18 minutes. Expired by the time I entered it.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-109', date: '2026-09-19', segment: 'Small Team (2-10)', rating: 2, sentiment: 'negative', feedbackText: 'Invite colleagues step is intrusive during initial evaluation. We should be able to explore solo first.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-110', date: '2026-09-19', segment: 'Solo Freelancer', rating: 1, sentiment: 'negative', feedbackText: 'Confirmation email did not arrive on our company Outlook domain.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-111', date: '2026-09-20', segment: 'Small Team (2-10)', rating: 3, sentiment: 'neutral', feedbackText: 'Wanted to see sample project templates first before setting up workspace permissions.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-112', date: '2026-09-20', segment: 'Enterprise (50+)', rating: 1, sentiment: 'negative', feedbackText: 'No-reply email sender IP appears on Barracuda spam blacklist.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-113', date: '2026-09-21', segment: 'Solo Freelancer', rating: 1, sentiment: 'negative', feedbackText: 'Had to request verification code 4 times before one finally hit my inbox.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-114', date: '2026-09-21', segment: 'Small Team (2-10)', rating: 2, sentiment: 'negative', feedbackText: 'Step 3 demanded credit card information even though it advertised a 14-day free trial.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-115', date: '2026-09-22', segment: 'Solo Freelancer', rating: 3, sentiment: 'neutral', feedbackText: 'Product looks promising, but signup flow took 15 minutes instead of the promised 2 minutes.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-116', date: '2026-09-22', segment: 'Enterprise (50+)', rating: 2, sentiment: 'negative', feedbackText: 'Workspace naming rules are too restrictive; rejected hyphens without clear explanation.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-117', date: '2026-09-23', segment: 'Solo Freelancer', rating: 1, sentiment: 'negative', feedbackText: 'Code took 14 minutes. The token expired upon clicking.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-118', date: '2026-09-23', segment: 'Small Team (2-10)', rating: 2, sentiment: 'negative', feedbackText: 'Teammates received invite email but the join link took them to a blank screen.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-119', date: '2026-09-24', segment: 'Solo Freelancer', rating: 4, sentiment: 'positive', feedbackText: 'Once I got past the verification email delay, the workspace dashboard was clean and snappy.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-120', date: '2026-09-24', segment: 'Small Team (2-10)', rating: 3, sentiment: 'neutral', feedbackText: 'Need clearer guidance on whether invited members get admin or viewer permissions.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-121', date: '2026-09-25', segment: 'Enterprise (50+)', rating: 1, sentiment: 'negative', feedbackText: 'Compliance policy prohibits team members from creating unvetted accounts. Need IT admin provisioning.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-122', date: '2026-09-25', segment: 'Solo Freelancer', rating: 2, sentiment: 'negative', feedbackText: 'Was prompted to select team timezone and currency before I even knew if the tool had the features I need.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-123', date: '2026-09-26', segment: 'Small Team (2-10)', rating: 3, sentiment: 'neutral', feedbackText: 'Email verification code input box did not support pasting 6 digits from clipboard.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-124', date: '2026-09-26', segment: 'Solo Freelancer', rating: 1, sentiment: 'negative', feedbackText: 'Verification code email had no branding, thought it was a phishing attempt.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-125', date: '2026-09-27', segment: 'Small Team (2-10)', rating: 4, sentiment: 'positive', feedbackText: 'Great product concept, but onboarding forced too many decisions upfront.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-126', date: '2026-09-27', segment: 'Solo Freelancer', rating: 5, sentiment: 'positive', feedbackText: 'Customer support resolved my signup issue within 10 minutes, loved the quick response.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-127', date: '2026-09-28', segment: 'Small Team (2-10)', rating: 3, sentiment: 'neutral', feedbackText: 'Would prefer a video walkthrough option during the initial setup step.', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: false },
+    { id: 'TK-128', date: '2026-09-28', segment: 'Solo Freelancer', rating: null, sentiment: null, feedbackText: '', sourceFile: 'onboarding_support_tickets_sept.csv', projectName: 'Onboarding Drop-off Analysis', projectId: 'proj_onboarding_demo', isExcluded: true }
+  ];
+}
+
+// GET /api/feedback-records (Aggregated customer feedback intelligence)
+app.get('/api/feedback-records', (req, res) => {
+  const records: any[] = [];
+  const sourcesSummary: any[] = [];
+
+  // Gather from loaded projects
+  for (const project of db.projects) {
+    if (project.sources && project.sources.length > 0) {
+      for (const src of project.sources) {
+        sourcesSummary.push({
+          id: src.id,
+          fileName: src.fileName,
+          fileType: src.fileType,
+          uploadedAt: src.uploadedAt,
+          recordCount: src.recordCount || 0,
+          excludedCount: src.excludedCount || 0,
+          exclusionNotes: src.exclusionNotes,
+          projectId: project.id,
+          projectName: project.name,
+        });
+
+        if (src.previewRows && Array.isArray(src.previewRows) && src.previewRows.length > 0) {
+          src.previewRows.forEach((row: any, idx: number) => {
+            records.push({
+              id: row.ticket_id || row.id || `row_${idx + 1}`,
+              date: row.created_date || row.date || '2026-09-20',
+              segment: row.user_segment || row.segment || row.device_type || 'General',
+              rating: typeof row.rating === 'number' ? row.rating : (typeof row.satisfaction_rating === 'number' ? row.satisfaction_rating : null),
+              sentiment: row.sentiment || (row.rating <= 2 ? 'negative' : (row.rating === 3 ? 'neutral' : 'positive')),
+              feedbackText: row.feedback_text || row.customer_comment || row.text || '',
+              sourceFile: src.fileName,
+              projectName: project.name,
+              projectId: project.id,
+              isExcluded: !row.feedback_text && !row.customer_comment,
+            });
+          });
+        }
+      }
+    }
+  }
+
+  // If no records in project previewRows yet, use the canonical demo records
+  if (records.length === 0) {
+    const demoRecords = getDemoFeedbackRows();
+    demoRecords.forEach((r) => records.push(r));
+    if (sourcesSummary.length === 0) {
+      sourcesSummary.push({
+        id: 'src_tickets_01',
+        fileName: 'onboarding_support_tickets_sept.csv',
+        fileType: 'csv',
+        uploadedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+        recordCount: 28,
+        excludedCount: 1,
+        exclusionNotes: '1 blank feedback record excluded from calculations.',
+        projectId: 'proj_onboarding_demo',
+        projectName: 'Onboarding Drop-off Analysis',
+      });
+    }
+  }
+
+  const validRecords = records.filter((r) => !r.isExcluded);
+  const excludedRecords = records.filter((r) => r.isExcluded);
+
+  res.json({
+    success: true,
+    records,
+    sources: sourcesSummary,
+    totalRecords: validRecords.length,
+    totalExcluded: excludedRecords.length,
+    validRecordsCount: validRecords.length,
+  });
+});
+
+// --- BULK EMAIL DISTRIBUTION & GOOGLE APPS SCRIPT ROUTES ---
+
+function validateEmailFormat(email: string): { isValid: boolean; error?: string } {
+  const trimmed = email ? email.trim() : '';
+  if (!trimmed) {
+    return { isValid: false, error: 'Empty email address' };
+  }
+  if (!trimmed.includes('@')) {
+    return { isValid: false, error: 'Missing @ symbol' };
+  }
+  const parts = trimmed.split('@');
+  if (parts.length !== 2) {
+    return { isValid: false, error: 'Multiple @ symbols found' };
+  }
+  const [localPart, domainPart] = parts;
+  if (!localPart) {
+    return { isValid: false, error: 'Missing username before @' };
+  }
+  if (!domainPart) {
+    return { isValid: false, error: 'Missing domain after @' };
+  }
+  if (!domainPart.includes('.')) {
+    return { isValid: false, error: 'Domain missing extension (e.g. .com)' };
+  }
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+  if (!emailRegex.test(trimmed)) {
+    return { isValid: false, error: 'Malformed email syntax or forbidden characters' };
+  }
+  return { isValid: true };
+}
+
+// GET /api/email/config
+app.get('/api/email/config', (req, res) => {
+  res.json({
+    success: true,
+    config: db.emailConfig || {},
+    optOuts: db.optOuts || [],
+  });
+});
+
+// POST /api/email/config
+app.post('/api/email/config', (req, res) => {
+  const { appsScriptUrl, senderName } = req.body;
+  db.emailConfig = {
+    ...db.emailConfig,
+    appsScriptUrl: appsScriptUrl !== undefined ? appsScriptUrl.trim() : db.emailConfig?.appsScriptUrl,
+    senderName: senderName !== undefined ? senderName.trim() : db.emailConfig?.senderName,
+  };
+  saveDatabase(db);
+  res.json({ success: true, config: db.emailConfig });
+});
+
+// GET /api/email/quota
+app.get('/api/email/quota', async (req, res) => {
+  const url = db.emailConfig?.appsScriptUrl;
+  if (!url) {
+    return res.json({
+      success: true,
+      isConfigured: false,
+      remainingQuota: null,
+      message: 'Google Apps Script Web App URL is not configured yet.',
+    });
+  }
+
+  try {
+    const scriptRes = await fetch(url, { method: 'GET', redirect: 'follow' });
+    const data: any = await scriptRes.json();
+    if (data && typeof data.remainingQuota === 'number') {
+      if (db.emailConfig) {
+        db.emailConfig.lastQuota = data.remainingQuota;
+        db.emailConfig.lastQuotaCheckedAt = new Date().toISOString();
+        saveDatabase(db);
+      }
+      return res.json({
+        success: true,
+        isConfigured: true,
+        remainingQuota: data.remainingQuota,
+        account: data.account || 'Google Account',
+        status: data.status || 'active',
+      });
+    } else {
+      return res.json({
+        success: false,
+        isConfigured: true,
+        remainingQuota: null,
+        error: data.error || 'Failed to retrieve quota from script response',
+      });
+    }
+  } catch (err: any) {
+    return res.status(502).json({
+      success: false,
+      isConfigured: true,
+      remainingQuota: db.emailConfig?.lastQuota || null,
+      error: `Could not reach Apps Script endpoint: ${err.message || 'Network error'}`,
+    });
+  }
+});
+
+// POST /api/email/validate-recipients
+app.post('/api/email/validate-recipients', (req, res) => {
+  const { rawRecipients, surveyId } = req.body;
+
+  if (!rawRecipients || !Array.isArray(rawRecipients)) {
+    return res.status(400).json({ success: false, error: 'Raw recipients list is required' });
+  }
+
+  const optOutSet = new Set((db.optOuts || []).map((e: string) => e.toLowerCase().trim()));
+
+  // Previous campaigns for this survey to check for re-sends
+  const previousCampaigns = (db.campaigns || []).filter((c: any) => c.surveyId === surveyId);
+  const previouslyEmailedSet = new Set<string>();
+  previousCampaigns.forEach((c: any) => {
+    (c.results || []).forEach((r: any) => {
+      if (r.status === 'sent' && r.email) {
+        previouslyEmailedSet.add(r.email.toLowerCase().trim());
+      }
+    });
+  });
+
+  const seenEmails = new Set<string>();
+  const recipients: any[] = [];
+
+  let invalidCount = 0;
+  let duplicateCount = 0;
+  let optedOutCount = 0;
+  let previouslyEmailedCount = 0;
+  let validUniqueCount = 0;
+
+  rawRecipients.forEach((item: any, idx: number) => {
+    const rawEmail = typeof item === 'string' ? item : item.email;
+    const name = typeof item === 'object' && item.name ? String(item.name).trim() : undefined;
+    const cleanEmail = rawEmail ? String(rawEmail).trim().toLowerCase() : '';
+
+    const validation = validateEmailFormat(cleanEmail);
+    const isOptedOut = optOutSet.has(cleanEmail);
+    const isPreviouslyEmailed = previouslyEmailedSet.has(cleanEmail);
+    let isDuplicate = false;
+
+    if (!validation.isValid) {
+      invalidCount++;
+    } else if (seenEmails.has(cleanEmail)) {
+      isDuplicate = true;
+      duplicateCount++;
+    } else {
+      seenEmails.add(cleanEmail);
+      if (isOptedOut) {
+        optedOutCount++;
+      } else {
+        validUniqueCount++;
+        if (isPreviouslyEmailed) {
+          previouslyEmailedCount++;
+        }
+      }
+    }
+
+    const isSelectable = validation.isValid && !isDuplicate && !isOptedOut;
+
+    recipients.push({
+      id: `rcp_${idx}_${Math.random().toString(36).substring(2, 6)}`,
+      email: cleanEmail,
+      name,
+      rowIndex: idx + 1,
+      isValid: validation.isValid,
+      validationError: validation.error,
+      isDuplicate,
+      isOptedOut,
+      isPreviouslyEmailed,
+      selected: isSelectable,
+    });
+  });
+
+  const summary = {
+    totalRows: rawRecipients.length,
+    validUniqueCount,
+    invalidCount,
+    duplicateCount,
+    optedOutCount,
+    previouslyEmailedCount,
+    selectedCount: validUniqueCount,
+  };
+
+  res.json({
+    success: true,
+    summary,
+    recipients,
+    previouslyEmailedWarning: previouslyEmailedCount > 0,
+  });
+});
+
+// POST /api/email/send-campaign
+app.post('/api/email/send-campaign', async (req, res) => {
+  const {
+    surveyId,
+    projectId,
+    campaignName,
+    subject,
+    body,
+    recipients,
+    confirmed,
+    simulate,
+  } = req.body;
+
+  if (!confirmed) {
+    return res.status(400).json({
+      success: false,
+      error: 'Explicit user confirmation is required before launching a bulk send.',
+    });
+  }
+
+  if (!surveyId || !recipients || !Array.isArray(recipients) || recipients.length === 0) {
+    return res.status(400).json({ success: false, error: 'Survey ID and valid recipient list are required.' });
+  }
+
+  const survey = db.surveys.find((s) => s.id === surveyId);
+  if (!survey) {
+    return res.status(404).json({ success: false, error: 'Survey not found.' });
+  }
+
+  const project = db.projects.find((p) => p.id === (projectId || survey.projectId));
+  const optOutSet = new Set((db.optOuts || []).map((e: string) => e.toLowerCase().trim()));
+
+  // Filter only valid & not opted out
+  const targetRecipients = recipients.filter((r: any) => {
+    const email = typeof r === 'string' ? r.trim().toLowerCase() : r.email?.trim().toLowerCase();
+    const v = validateEmailFormat(email);
+    return v.isValid && !optOutSet.has(email);
+  });
+
+  if (targetRecipients.length === 0) {
+    return res.status(400).json({ success: false, error: 'No valid, non-opted-out recipients selected.' });
+  }
+
+  const campaignId = `camp_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+  const surveyUrl = `${req.protocol}://${req.get('host')}/#survey-${survey.id}?cid=${campaignId}`;
+
+  const appsScriptUrl = db.emailConfig?.appsScriptUrl;
+
+  // Real Google Apps Script Execution
+  if (appsScriptUrl && !simulate) {
+    try {
+      const payload = {
+        action: 'send',
+        campaignId,
+        subject: subject || `${survey.title} — Please share your feedback`,
+        body: body || `Please complete our survey: {{survey_url}}`,
+        surveyUrl,
+        recipients: targetRecipients.map((r: any) => ({
+          email: typeof r === 'string' ? r : r.email,
+          name: typeof r === 'object' ? r.name : '',
+        })),
+      };
+
+      const scriptRes = await fetch(appsScriptUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        redirect: 'follow',
+      });
+
+      const scriptData: any = await scriptRes.json();
+
+      if (!scriptData || scriptData.success === false) {
+        return res.status(500).json({
+          success: false,
+          error: scriptData?.error || 'Apps Script reported an execution error.',
+        });
+      }
+
+      const campaignRecord = {
+        id: campaignId,
+        surveyId,
+        projectId: survey.projectId,
+        surveyTitle: survey.title,
+        name: campaignName || `${survey.title} Email Campaign`,
+        subject: subject || `${survey.title} — Please share your feedback`,
+        body: body || `Please complete our survey: {{survey_url}}`,
+        senderAccount: scriptData.account || 'Configured Google Account',
+        totalRecipients: targetRecipients.length,
+        sentCount: scriptData.sentCount || targetRecipients.length,
+        failedCount: scriptData.failedCount || 0,
+        remainingQuota: scriptData.remainingQuota,
+        sentAt: new Date().toISOString(),
+        results: scriptData.results || targetRecipients.map((r: any) => ({
+          email: typeof r === 'string' ? r : r.email,
+          name: typeof r === 'object' ? r.name : undefined,
+          status: 'sent',
+          timestamp: new Date().toISOString(),
+        })),
+        responseCount: 0,
+        responseRate: 0,
+        isSimulation: false,
+      };
+
+      db.campaigns = db.campaigns || [];
+      db.campaigns.unshift(campaignRecord);
+      if (db.emailConfig && typeof scriptData.remainingQuota === 'number') {
+        db.emailConfig.lastQuota = scriptData.remainingQuota;
+        db.emailConfig.lastQuotaCheckedAt = new Date().toISOString();
+      }
+      saveDatabase(db);
+
+      return res.json({ success: true, campaign: campaignRecord });
+    } catch (err: any) {
+      console.error('Apps Script dispatch error:', err);
+      return res.status(502).json({
+        success: false,
+        error: `Failed to dispatch to Apps Script: ${err.message || 'Network error'}`,
+      });
+    }
+  }
+
+  // Simulation / Development Test Mode (with honest labeling)
+  const results = targetRecipients.map((r: any) => {
+    const email = typeof r === 'string' ? r : r.email;
+    const name = typeof r === 'object' ? r.name : undefined;
+    return {
+      email,
+      name,
+      status: 'simulated',
+      timestamp: new Date().toISOString(),
+    };
+  });
+
+  const simulatedCampaign = {
+    id: campaignId,
+    surveyId,
+    projectId: survey.projectId,
+    surveyTitle: survey.title,
+    name: campaignName || `${survey.title} Test Batch`,
+    subject: subject || `${survey.title} — Please share your feedback`,
+    body: body || `Please complete our survey: {{survey_url}}`,
+    senderAccount: 'Local Simulation (Apps Script Not Connected)',
+    totalRecipients: targetRecipients.length,
+    sentCount: targetRecipients.length,
+    failedCount: 0,
+    remainingQuota: db.emailConfig?.lastQuota || 100,
+    sentAt: new Date().toISOString(),
+    results,
+    responseCount: 0,
+    responseRate: 0,
+    isSimulation: true,
+  };
+
+  db.campaigns = db.campaigns || [];
+  db.campaigns.unshift(simulatedCampaign);
+  saveDatabase(db);
+
+  res.json({
+    success: true,
+    campaign: simulatedCampaign,
+    message: appsScriptUrl
+      ? 'Campaign sent in simulation mode.'
+      : 'Google Apps Script Web App URL is not configured yet. Campaign recorded in test mode with shareable link.',
+  });
+});
+
+// GET /api/email/campaigns
+app.get('/api/email/campaigns', (req, res) => {
+  const { surveyId } = req.query;
+  let campaigns = db.campaigns || [];
+  if (surveyId) {
+    campaigns = campaigns.filter((c: any) => c.surveyId === surveyId);
+  }
+
+  // Calculate actual response counts from db.responses
+  const enriched = campaigns.map((c: any) => {
+    const matchedResponses = (db.responses || []).filter((r: any) => r.campaignId === c.id);
+    const responseCount = matchedResponses.length;
+    const responseRate = c.sentCount > 0 ? parseFloat(((responseCount / c.sentCount) * 100).toFixed(1)) : 0;
+    return {
+      ...c,
+      responseCount,
+      responseRate,
+    };
+  });
+
+  res.json({ success: true, campaigns: enriched });
+});
+
+// GET /api/email/campaigns/:id
+app.get('/api/email/campaigns/:id', (req, res) => {
+  const campaign = (db.campaigns || []).find((c: any) => c.id === req.params.id);
+  if (!campaign) {
+    return res.status(404).json({ success: false, error: 'Campaign not found' });
+  }
+  const matchedResponses = (db.responses || []).filter((r: any) => r.campaignId === campaign.id);
+  const responseCount = matchedResponses.length;
+  const responseRate = campaign.sentCount > 0 ? parseFloat(((responseCount / campaign.sentCount) * 100).toFixed(1)) : 0;
+
+  res.json({
+    success: true,
+    campaign: {
+      ...campaign,
+      responseCount,
+      responseRate,
+    },
+  });
+});
+
+// GET /api/email/campaigns/:id/export
+app.get('/api/email/campaigns/:id/export', (req, res) => {
+  const campaign = (db.campaigns || []).find((c: any) => c.id === req.params.id);
+  if (!campaign) {
+    return res.status(404).send('Campaign not found');
+  }
+
+  let csv = 'Recipient Email,Name,Status,Error Reason,Timestamp\n';
+  (campaign.results || []).forEach((r: any) => {
+    const email = `"${(r.email || '').replace(/"/g, '""')}"`;
+    const name = `"${(r.name || '').replace(/"/g, '""')}"`;
+    const status = `"${(r.status || '').replace(/"/g, '""')}"`;
+    const error = `"${(r.error || '').replace(/"/g, '""')}"`;
+    const ts = `"${(r.timestamp || campaign.sentAt || '').replace(/"/g, '""')}"`;
+    csv += `${email},${name},${status},${error},${ts}\n`;
+  });
+
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', `attachment; filename=Campaign_${campaign.id}_results.csv`);
+  res.send(csv);
+});
+
+// GET /api/email/opt-outs
+app.get('/api/email/opt-outs', (req, res) => {
+  res.json({ success: true, optOuts: db.optOuts || [] });
+});
+
+// POST /api/email/opt-outs
+app.post('/api/email/opt-outs', (req, res) => {
+  const { email, action } = req.body;
+  if (!email || !email.trim()) {
+    return res.status(400).json({ success: false, error: 'Email address is required' });
+  }
+
+  const clean = email.trim().toLowerCase();
+  db.optOuts = db.optOuts || [];
+
+  if (action === 'remove') {
+    db.optOuts = db.optOuts.filter((e: string) => e !== clean);
+  } else {
+    if (!db.optOuts.includes(clean)) {
+      db.optOuts.push(clean);
+    }
+  }
+
+  saveDatabase(db);
+  res.json({ success: true, optOuts: db.optOuts });
 });
 
 // --- AI / GEMINI POWERED ENDPOINTS ---
