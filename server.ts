@@ -346,6 +346,17 @@ function saveDatabase(data: DbSchema) {
 
 let db = loadDatabase();
 
+// --- HEALTH CHECK & STATUS ---
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    service: 'SignalIQ API',
+    nodeVersion: process.version,
+    env: process.env.NODE_ENV || 'development',
+  });
+});
+
 // --- PROJECT MANAGEMENT ROUTES ---
 
 // GET /api/projects
@@ -591,6 +602,29 @@ app.get('/api/surveys/:id/responses', (req, res) => {
 
 // GET /api/responses (All Survey Submissions)
 app.get('/api/responses', (req, res) => {
+  const { surveyId, projectId } = req.query;
+  let responses = db.responses || [];
+  if (surveyId) {
+    responses = responses.filter((r) => r.surveyId === surveyId);
+  }
+  if (projectId) {
+    responses = responses.filter((r) => r.projectId === projectId);
+  }
+  const enriched = responses.map((r) => {
+    const survey = db.surveys.find((s) => s.id === r.surveyId);
+    const project = db.projects.find((p) => p.id === r.projectId);
+    return {
+      ...r,
+      surveyTitle: survey?.title || 'Targeted Survey',
+      projectName: project?.name || 'Research Project',
+      surveyQuestions: survey?.questions || [],
+    };
+  });
+  res.json({ success: true, responses: enriched, count: enriched.length });
+});
+
+// GET /api/surveys/responses (Alias for all survey responses)
+app.get('/api/surveys/responses', (req, res) => {
   const { surveyId, projectId } = req.query;
   let responses = db.responses || [];
   if (surveyId) {
@@ -906,6 +940,12 @@ app.post('/api/email/validate-recipients', (req, res) => {
     recipients,
     previouslyEmailedWarning: previouslyEmailedCount > 0,
   });
+});
+
+// POST /api/email/send (Alias for send-campaign)
+app.post('/api/email/send', async (req, res) => {
+  req.url = '/api/email/send-campaign';
+  return app._router.handle(req, res);
 });
 
 // POST /api/email/send-campaign
@@ -1235,6 +1275,12 @@ Respond ONLY with valid JSON:
     console.error('Suggest objective error:', err);
     res.status(500).json({ success: false, error: err.message || 'Failed to suggest objective' });
   }
+});
+
+// POST /api/ai/generate-brief (Alias for research-brief)
+app.post('/api/ai/generate-brief', async (req, res) => {
+  req.url = '/api/ai/research-brief';
+  return app._router.handle(req, res);
 });
 
 // POST /api/ai/research-brief
@@ -1676,6 +1722,11 @@ Respond ONLY with valid JSON:
       error: 'Transcript analysis failed: ' + (err.message || 'Unknown error'),
     });
   }
+});
+
+// API 404 handler for any unmatched /api/* routes
+app.all('/api/*', (req, res) => {
+  res.status(404).json({ success: false, error: 'API endpoint not found' });
 });
 
 // --- FRONTEND INTEGRATION (Vite dev middleware vs static build) ---

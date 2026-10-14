@@ -229,7 +229,9 @@ function getLocalData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
-  } catch (e) {}
+  } catch (e) {
+    // fallback
+  }
   const initial = {
     projects: INITIAL_PROJECTS,
     surveys: INITIAL_SURVEYS,
