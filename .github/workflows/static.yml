@@ -32,7 +32,7 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Build production bundle
-        run: npm run build
+        run: npx vite build --base=/Signaliq/
 
       - name: SPA 404 fallback
         run: cp dist/index.html dist/404.html
