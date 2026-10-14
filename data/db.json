@@ -1,0 +1,338 @@
+{
+  "projects": [
+    {
+      "id": "proj_onboarding_demo",
+      "name": "Onboarding Drop-off Analysis",
+      "objective": "Understand why new customers abandon the onboarding process before completing setup.",
+      "productName": "CloudDesk SaaS",
+      "customerSegment": "New signups in the last 30 days",
+      "businessContext": "Trial-to-paid conversion fell from 18% to 11% after the Q3 onboarding redesign.",
+      "desiredOutcome": "Identify the primary onboarding friction points and determine if verification or team invite is causing drop-offs.",
+      "category": "onboarding",
+      "status": "analyzed",
+      "createdAt": "2026-10-11T06:18:50.900Z",
+      "updatedAt": "2026-10-13T06:18:50.900Z",
+      "brief": {
+        "primaryQuestion": "Why do new signups abandon the onboarding process before completing workspace setup?",
+        "subQuestions": [
+          "At which step of onboarding do most drop-offs occur according to feedback?",
+          "What technical or usability roadblocks are users encountering during email verification?",
+          "Do enterprise users drop off for different reasons than solo practitioners?"
+        ],
+        "targetSegment": "New signups in the last 30 days",
+        "requiredInfo": [
+          "Drop-off step mentions",
+          "Verification failure reports",
+          "Invited team member friction",
+          "User role/team size"
+        ],
+        "signalsToInvestigate": [
+          "Verification code delivery speed",
+          "OAuth login issues",
+          "Confusion around workspace naming",
+          "Role permission settings"
+        ],
+        "potentialSources": [
+          "Support tickets (Zendesk/Intercom)",
+          "Customer interview transcripts",
+          "Onboarding analytics"
+        ],
+        "limitationsAndAmbiguities": [
+          "Support tickets over-represent vocal users encountering bugs and under-represent passive abandoners who simply leave silently."
+        ],
+        "clarificationQuestions": [
+          "Are drop-offs measured at first login or at team invitation completion?"
+        ],
+        "recommendedFocus": "Focus on separating technical verification hurdles from product complexity during setup.",
+        "approved": true
+      },
+      "sources": [
+        {
+          "id": "src_tickets_01",
+          "fileName": "onboarding_support_tickets_sept.csv",
+          "fileType": "csv",
+          "uploadedAt": "2026-10-12T06:18:50.900Z",
+          "fileSize": 48200,
+          "recordCount": 28,
+          "excludedCount": 1,
+          "exclusionNotes": "1 blank feedback record excluded from calculations.",
+          "detectedColumns": [
+            "ticket_id",
+            "created_date",
+            "user_segment",
+            "feedback_text",
+            "sentiment",
+            "rating"
+          ],
+          "columnMappings": {
+            "idCol": "ticket_id",
+            "dateCol": "created_date",
+            "segmentCol": "user_segment",
+            "feedbackTextCol": "feedback_text",
+            "ratingCol": "rating"
+          },
+          "status": "ready"
+        }
+      ],
+      "analysis": {
+        "analyzedAt": "2026-10-13T06:18:50.900Z",
+        "sourcesAnalyzed": [
+          "onboarding_support_tickets_sept.csv"
+        ],
+        "totalRecords": 28,
+        "validRecords": 27,
+        "excludedRecords": 1,
+        "exclusionsReason": "1 empty comment row without feedback was excluded from metric calculations.",
+        "ratingStats": {
+          "average": 2.1,
+          "distribution": {
+            "1": 11,
+            "2": 8,
+            "3": 5,
+            "4": 2,
+            "5": 1
+          }
+        },
+        "segmentStats": {
+          "Solo Freelancer": 12,
+          "Small Team (2-10)": 10,
+          "Enterprise (50+)": 5
+        },
+        "recurringThemes": [
+          {
+            "id": "th_verification",
+            "name": "Email Verification Delay & Spam Filtering",
+            "description": "Users report waiting 10-15 minutes for 6-digit confirmation codes or finding them buried in corporate spam folders.",
+            "frequency": 14,
+            "sentimentBreakdown": {
+              "positive": 0,
+              "negative": 13,
+              "neutral": 1
+            },
+            "representativeQuotes": [
+              {
+                "quote": "I waited 20 minutes for the verification code email. By the time it arrived, I had moved on to test another tool.",
+                "sourceFile": "onboarding_support_tickets_sept.csv",
+                "sourceRef": "Row #4 (Ticket #1042)"
+              },
+              {
+                "quote": "Corporate firewall blocked the no-reply code email. Need an option to use Google SSO instead of forced email code.",
+                "sourceFile": "onboarding_support_tickets_sept.csv",
+                "sourceRef": "Row #11 (Ticket #1089)"
+              }
+            ],
+            "potentialCauses": "SendGrid deliverability throttling on new domain and lack of Google SSO fallback during signup."
+          },
+          {
+            "id": "th_team_invites",
+            "name": "Forced Team Member Invitation Screen",
+            "description": "Step 3 requires inviting at least two colleagues before reaching the workspace, frustrating solo users and evaluators.",
+            "frequency": 8,
+            "sentimentBreakdown": {
+              "positive": 0,
+              "negative": 7,
+              "neutral": 1
+            },
+            "representativeQuotes": [
+              {
+                "quote": "I just wanted to test the product myself before introducing it to my team, but the UI blocked me until I typed 2 email addresses.",
+                "sourceFile": "onboarding_support_tickets_sept.csv",
+                "sourceRef": "Row #16 (Ticket #1134)"
+              },
+              {
+                "quote": "The Skip Invite button is almost invisible gray text on white. Thought it was mandatory.",
+                "sourceFile": "onboarding_support_tickets_sept.csv",
+                "sourceRef": "Row #22 (Ticket #1178)"
+              }
+            ],
+            "potentialCauses": "Growth experiment forcing viral invitations prematurely."
+          }
+        ],
+        "painPoints": [
+          {
+            "id": "pp_code_latency",
+            "problem": "Verification code latency causes users to abandon before ever seeing the workspace dashboard.",
+            "circumstances": "Occurs during initial email signup, especially on Outlook and corporate Microsoft 365 inboxes.",
+            "implications": "High initial acquisition cost wasted; estimated 30%+ drop before account activation.",
+            "impactSeverity": "Critical",
+            "confidence": "High",
+            "supportingEvidence": [
+              {
+                "quote": "Code took 14 minutes. The token expired upon clicking.",
+                "sourceFile": "onboarding_support_tickets_sept.csv",
+                "sourceRef": "Ticket #1042"
+              }
+            ]
+          },
+          {
+            "id": "pp_premature_invites",
+            "problem": "Compulsory team invite step halts solo evaluators.",
+            "circumstances": "Step 3 of 4 in setup wizard.",
+            "implications": "Creates unnecessary friction for the champion evaluating the tool on behalf of their company.",
+            "impactSeverity": "High",
+            "confidence": "High",
+            "supportingEvidence": [
+              {
+                "quote": "Blocked me until I typed 2 email addresses.",
+                "sourceFile": "onboarding_support_tickets_sept.csv",
+                "sourceRef": "Ticket #1134"
+              }
+            ]
+          }
+        ],
+        "sentiment": {
+          "positivePct": 4,
+          "negativePct": 78,
+          "neutralPct": 18,
+          "mixedPct": 0,
+          "summary": "Predominantly frustrated tone focused on onboarding gating mechanisms and slow verification.",
+          "isAiInterpretation": true
+        },
+        "outliers": [
+          {
+            "observation": "One enterprise IT manager praised the strict domain-matching security rule despite user complaints.",
+            "minorityPerspective": "Security compliance administrators value mandatory verification codes even if end users experience friction.",
+            "evidence": "Glad you require domain verification upfront, helps prevent unauthorized employee signups.",
+            "sourceFile": "onboarding_support_tickets_sept.csv"
+          }
+        ],
+        "keyInsights": [
+          {
+            "id": "ins_01",
+            "title": "Verification latency is the most acute technical friction in the uploaded tickets",
+            "explanation": "52% of uploaded negative tickets explicitly cite waiting more than 10 minutes for email tokens or code expiration.",
+            "supportingQuotes": [
+              {
+                "quote": "Waited 20 minutes for the verification code email. Moved on to another tool.",
+                "sourceFile": "onboarding_support_tickets_sept.csv",
+                "sourceRef": "Ticket #1042"
+              }
+            ],
+            "sourceFiles": [
+              "onboarding_support_tickets_sept.csv"
+            ],
+            "confidenceLevel": "High",
+            "limitations": "Support tickets inherently capture users who bothered to write support; passive abandoners who left without submitting a ticket are not recorded here."
+          }
+        ],
+        "sufficiencyAssessment": {
+          "outcome": "B_PARTIALLY_SUFFICIENT",
+          "statusHeadline": "Partially Sufficient Evidence — Key Root Causes Identified, But Silent Abandonment Rate Unknown",
+          "whatDataEstablishes": [
+            "Customers who reach out to support are heavily impacted by email verification delays and forced team invites.",
+            "The Skip button on Step 3 suffers from low contrast and confusing microcopy."
+          ],
+          "whatRemainsUnknown": [
+            "What percentage of users who drop off do so because of verification delays vs lack of feature interest or pricing concerns?",
+            "Do users who drop off without contacting support encounter the same issues, or do they abandon due to unfulfilled value expectations?"
+          ],
+          "whyEvidenceCannotAnswer": "Support tickets represent vocal complainants (approx 2-5% of total signups). They cannot measure the silent majority who abandoned without filing a ticket.",
+          "recommendedMethod": "targeted_survey",
+          "recommendedMethodTitle": "Targeted Pulse Survey to Abandoned Signups",
+          "rationale": "A lightweight 3-question survey sent to users who dropped off 24-48 hours ago will quantify whether email delays or value propositions caused their departure.",
+          "suggestedSurveyFocus": "Exit reasons, verification experience, and missing setup expectations."
+        },
+        "recommendations": [
+          {
+            "id": "rec_01",
+            "title": "Make Team Member Invites Optional with High-Contrast \"Skip for Now\" Action",
+            "problemAddressed": "Solo evaluators and champions are blocked from testing the product independently.",
+            "evidenceSupporting": "8 out of 27 tickets specifically complained about being forced to invite colleagues before seeing product value.",
+            "expectedOutcomeHypothesis": "Increasing the visibility of \"Skip for now\" will eliminate immediate bounce on Step 3 for solo evaluators.",
+            "priority": "High",
+            "priorityRationale": "Low engineering effort, immediate reduction in onboarding gatekeeper friction.",
+            "suggestedNextStep": "Redesign Step 3 CTA button to provide prominent primary \"Skip for now and explore solo\" link."
+          },
+          {
+            "id": "rec_02",
+            "title": "Enable One-Click Google and Microsoft SSO on Initial Signup",
+            "problemAddressed": "Verification code emails are throttled by spam filters or delivered with 10-15 minute latency.",
+            "evidenceSupporting": "14 tickets cited waiting for email codes or corporate firewall blocks.",
+            "expectedOutcomeHypothesis": "OAuth SSO bypasses email delivery latency entirely for over 60% of corporate users.",
+            "priority": "High",
+            "priorityRationale": "Directly addresses the largest volume of support tickets.",
+            "suggestedNextStep": "Implement Google & Microsoft OAuth on signup modal."
+          }
+        ]
+      }
+    }
+  ],
+  "surveys": [
+    {
+      "id": "srv_onboarding_pulse",
+      "projectId": "proj_onboarding_demo",
+      "title": "CloudDesk Onboarding Experience Check-in",
+      "introduction": "We noticed you started setting up CloudDesk recently. Help us understand what got in your way with 3 quick questions (less than 1 minute).",
+      "status": "published",
+      "createdAt": "2026-10-13T06:18:50.900Z",
+      "publishedAt": "2026-10-13T06:18:50.900Z",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "What was the main reason you paused your setup?",
+          "type": "single_choice",
+          "options": [
+            "Waiting for verification email / code",
+            "Was asked to invite team members too early",
+            "Could not find the feature I needed",
+            "Ran out of time / will finish later",
+            "Other"
+          ],
+          "required": true,
+          "addressesResearchGap": "Quantifies whether verification latency or forced invites causes the largest silent drop-off."
+        },
+        {
+          "id": "q2",
+          "text": "How smooth was the initial account verification?",
+          "type": "rating_scale",
+          "required": true,
+          "addressesResearchGap": "Measures verification friction score across non-support respondents."
+        },
+        {
+          "id": "q3",
+          "text": "What is one thing we could change to make setup easier for you?",
+          "type": "long_text",
+          "required": false,
+          "addressesResearchGap": "Uncovers unprompted expectations from evaluators."
+        }
+      ],
+      "closingMessage": "Thank you for your feedback! Your input directly helps us simplify onboarding.",
+      "responseCount": 3
+    }
+  ],
+  "responses": [
+    {
+      "id": "resp_01",
+      "surveyId": "srv_onboarding_pulse",
+      "projectId": "proj_onboarding_demo",
+      "submittedAt": "2026-10-13T18:18:50.900Z",
+      "answers": {
+        "q1": "Waiting for verification email / code",
+        "q2": 1,
+        "q3": "Allow logging in with Google directly so I do not have to check spam folders."
+      }
+    },
+    {
+      "id": "resp_02",
+      "surveyId": "srv_onboarding_pulse",
+      "projectId": "proj_onboarding_demo",
+      "submittedAt": "2026-10-14T02:18:50.900Z",
+      "answers": {
+        "q1": "Was asked to invite team members too early",
+        "q2": 4,
+        "q3": "Let me play with demo data before asking me to invite my team manager."
+      }
+    },
+    {
+      "id": "resp_1791958739925_ww4gz",
+      "surveyId": "srv_onboarding_pulse",
+      "projectId": "proj_onboarding_demo",
+      "submittedAt": "2026-10-14T06:18:59.925Z",
+      "answers": {
+        "q1": "Waiting for verification email / code",
+        "q2": 2,
+        "q3": "Fast login please"
+      }
+    }
+  ]
+}

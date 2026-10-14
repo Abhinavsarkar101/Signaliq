@@ -1,0 +1,6 @@
+{
+  "name": "SignalIQ",
+  "description": "Customer Feedback Intelligence Platform — analyse customer feedback, uncover evidence-backed insights, identify knowledge gaps, assess research sufficiency, and recommend high-impact actions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
