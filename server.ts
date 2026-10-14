@@ -4,6 +4,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
+import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
 
@@ -27,6 +28,20 @@ const ai = new GoogleGenAI({
   },
 });
 
+// Supabase Client Setup
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+let supabase: any = null;
+if (supabaseUrl && supabaseKey) {
+  try {
+    supabase = createClient(supabaseUrl, supabaseKey);
+    console.log('Supabase client initialized successfully.');
+  } catch (err) {
+    console.error('Failed to initialize Supabase client:', err);
+  }
+}
+
 // Database storage setup
 const DATA_DIR = path.resolve(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
@@ -45,7 +60,54 @@ interface DbSchema {
   };
 }
 
-function loadDatabase(): DbSchema {
+async function loadDatabaseFromSupabase(): Promise<DbSchema | null> {
+  if (!supabase) return null;
+  try {
+    const [projRes, survRes, respRes, campRes, settingsRes] = await Promise.all([
+      supabase.from('projects').select('*'),
+      supabase.from('surveys').select('*'),
+      supabase.from('responses').select('*'),
+      supabase.from('campaigns').select('*'),
+      supabase.from('settings').select('*'),
+    ]);
+
+    const projects = projRes.data ? projRes.data.map((r: any) => r.data) : [];
+    const surveys = survRes.data ? survRes.data.map((r: any) => r.data) : [];
+    const responses = respRes.data ? respRes.data.map((r: any) => r.data) : [];
+    const campaigns = campRes.data ? campRes.data.map((r: any) => r.data) : [];
+    
+    let optOuts = ['unsubscribed@example.com'];
+    let emailConfig = {
+      appsScriptUrl: process.env.APPS_SCRIPT_WEBAPP_URL || '',
+      senderName: 'SignalIQ Research Team',
+    };
+
+    if (settingsRes.data) {
+      for (const s of settingsRes.data) {
+        if (s.key === 'optOuts') optOuts = s.data;
+        if (s.key === 'emailConfig') emailConfig = s.data;
+      }
+    }
+
+    if (projects.length === 0 && surveys.length === 0) {
+      return null;
+    }
+
+    return {
+      projects,
+      surveys,
+      responses,
+      campaigns,
+      optOuts,
+      emailConfig,
+    };
+  } catch (err) {
+    console.error('Failed to load database from Supabase:', err);
+    return null;
+  }
+}
+
+function loadLocalDatabase(): DbSchema {
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -62,7 +124,7 @@ function loadDatabase(): DbSchema {
       return loaded;
     }
   } catch (err) {
-    console.error('Failed to load database file, using defaults:', err);
+    console.error('Failed to load local database file, using defaults:', err);
   }
 
   // Seed default demo projects for immediate exploration
@@ -329,22 +391,91 @@ function loadDatabase(): DbSchema {
     ],
   };
 
-  saveDatabase(initialDb);
+  saveLocalDatabase(initialDb);
   return initialDb;
 }
 
-function saveDatabase(data: DbSchema) {
+function saveLocalDatabase(data: DbSchema) {
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
   } catch (err) {
-    console.error('Failed to save database file:', err);
+    console.error('Failed to save local database file:', err);
   }
 }
 
-let db = loadDatabase();
+async function saveDatabaseToSupabase(data: DbSchema) {
+  if (!supabase) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Supabase is not configured (SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required in production).');
+    }
+    return;
+  }
+
+  try {
+    if (data.projects && data.projects.length > 0) {
+      const projRows = data.projects.map((p) => ({
+        id: p.id,
+        name: p.name || '',
+        objective: p.objective || '',
+        status: p.status || 'draft',
+        created_at: p.createdAt || new Date().toISOString(),
+        updated_at: p.updatedAt || new Date().toISOString(),
+        data: p,
+      }));
+      await supabase.from('projects').upsert(projRows, { onConflict: 'id' });
+    }
+
+    if (data.surveys && data.surveys.length > 0) {
+      const survRows = data.surveys.map((s) => ({
+        id: s.id,
+        project_id: s.projectId,
+        title: s.title || '',
+        data: s,
+      }));
+      await supabase.from('surveys').upsert(survRows, { onConflict: 'id' });
+    }
+
+    if (data.responses && data.responses.length > 0) {
+      const respRows = data.responses.map((r) => ({
+        id: r.id,
+        survey_id: r.surveyId,
+        project_id: r.projectId,
+        data: r,
+      }));
+      await supabase.from('responses').upsert(respRows, { onConflict: 'id' });
+    }
+
+    if (data.campaigns && data.campaigns.length > 0) {
+      const campRows = data.campaigns.map((c) => ({
+        id: c.id,
+        data: c,
+      }));
+      await supabase.from('campaigns').upsert(campRows, { onConflict: 'id' });
+    }
+
+    if (data.optOuts) {
+      await supabase.from('settings').upsert({ key: 'optOuts', data: data.optOuts }, { onConflict: 'key' });
+    }
+    if (data.emailConfig) {
+      await supabase.from('settings').upsert({ key: 'emailConfig', data: data.emailConfig }, { onConflict: 'key' });
+    }
+  } catch (err: any) {
+    console.error('Failed to save to Supabase:', err);
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(`Supabase persistence failed: ${err.message || 'Unknown database error'}`);
+    }
+  }
+}
+
+async function saveDatabase(data: DbSchema) {
+  saveLocalDatabase(data);
+  await saveDatabaseToSupabase(data);
+}
+
+let db: DbSchema = { projects: [], surveys: [], responses: [], campaigns: [], optOuts: [], emailConfig: {} };
 
 // --- HEALTH CHECK & STATUS ---
 app.get('/api/health', (req, res) => {
@@ -355,6 +486,45 @@ app.get('/api/health', (req, res) => {
     nodeVersion: process.version,
     env: process.env.NODE_ENV || 'development',
   });
+});
+
+app.get('/api/health/supabase', async (req, res) => {
+  if (!supabase) {
+    return res.status(503).json({
+      success: false,
+      status: 'disconnected',
+      error: 'Supabase is not configured on the server.',
+    });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('id')
+      .limit(1);
+
+    if (error) {
+      console.error('Supabase health check query error:', error);
+      return res.status(502).json({
+        success: false,
+        status: 'error',
+        error: 'Failed to query Supabase database.',
+      });
+    }
+
+    return res.json({
+      success: true,
+      status: 'connected',
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err: any) {
+    console.error('Supabase health check unexpected error:', err);
+    return res.status(500).json({
+      success: false,
+      status: 'error',
+      error: 'An unexpected error occurred while checking Supabase connectivity.',
+    });
+  }
 });
 
 // --- PROJECT MANAGEMENT ROUTES ---
@@ -1733,6 +1903,18 @@ app.all('/api/*', (req, res) => {
 
 async function startServer() {
   const isProd = process.env.NODE_ENV === 'production';
+
+  let loaded = await loadDatabaseFromSupabase();
+  if (!loaded) {
+    loaded = loadLocalDatabase();
+  }
+  db = loaded;
+
+  if (supabase) {
+    await saveDatabaseToSupabase(db).catch((err) => {
+      console.error('Initial sync to Supabase failed:', err);
+    });
+  }
 
   if (!isProd) {
     const { createServer: createViteServer } = await import('vite');
