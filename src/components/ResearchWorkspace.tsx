@@ -3,6 +3,7 @@ import { Project } from '../types';
 import { api } from '../lib/api';
 import { BriefStep } from './BriefStep';
 import { EvidenceUploadStep } from './EvidenceUploadStep';
+import { FeedbackHubView } from './FeedbackHubView';
 import { AnalysisStep } from './AnalysisStep';
 import { SurveyBuilderStep } from './SurveyBuilderStep';
 import { ReportStep } from './ReportStep';
@@ -23,7 +24,7 @@ interface ResearchWorkspaceProps {
   onBackToProjects: () => void;
 }
 
-export type WorkspaceStep = 'brief' | 'upload' | 'analysis' | 'survey' | 'report';
+export type WorkspaceStep = 'brief' | 'upload' | 'feedback_hub' | 'analysis' | 'survey' | 'report';
 
 export const ResearchWorkspace: React.FC<ResearchWorkspaceProps> = ({
   project,
@@ -33,7 +34,7 @@ export const ResearchWorkspace: React.FC<ResearchWorkspaceProps> = ({
   // Determine initial step based on project state
   const getInitialStep = (): WorkspaceStep => {
     if (project.analysis) return 'analysis';
-    if (project.sources && project.sources.length > 0) return 'upload';
+    if (project.sources && project.sources.length > 0) return 'feedback_hub';
     return 'brief';
   };
 
@@ -74,9 +75,10 @@ export const ResearchWorkspace: React.FC<ResearchWorkspaceProps> = ({
   const steps = [
     { id: 'brief', label: '1. Objective & AI Brief', icon: FileText },
     { id: 'upload', label: '2. Evidence Upload', icon: UploadCloud, badge: project.sources?.length || 0 },
-    { id: 'analysis', label: '3. Analysis & Sufficiency', icon: BarChart3, badge: project.analysis ? '✓' : undefined },
-    { id: 'survey', label: '4. Targeted Survey', icon: ListTodo, badge: project.survey ? 'Ready' : undefined },
-    { id: 'report', label: '5. Consolidated Report', icon: CheckCircle2 },
+    { id: 'feedback_hub', label: '3. VoC & Churn Intelligence', icon: Sparkles, badge: 'New' },
+    { id: 'analysis', label: '4. Analysis & Sufficiency', icon: BarChart3, badge: project.analysis ? '✓' : undefined },
+    { id: 'survey', label: '5. Targeted Survey', icon: ListTodo, badge: project.survey ? 'Ready' : undefined },
+    { id: 'report', label: '6. Consolidated Report', icon: CheckCircle2 },
   ];
 
   return (
@@ -178,6 +180,13 @@ export const ResearchWorkspace: React.FC<ResearchWorkspaceProps> = ({
             onUpdateProject={onUpdateProject}
             onRunAnalysis={handleRunAnalysis}
             isAnalyzing={isAnalyzing}
+          />
+        )}
+
+        {activeStep === 'feedback_hub' && (
+          <FeedbackHubView
+            project={project}
+            onUpdateProject={onUpdateProject}
           />
         )}
 

@@ -13,8 +13,8 @@ import {
 import { useTheme } from '../context/ThemeContext';
 
 interface NavbarProps {
-  currentView: 'dashboard' | 'projects' | 'workspace' | 'surveys' | 'reports' | 'settings' | 'feedback' | 'submissions';
-  setCurrentView: (view: 'dashboard' | 'projects' | 'workspace' | 'surveys' | 'reports' | 'settings' | 'feedback' | 'submissions') => void;
+  currentView: 'dashboard' | 'projects' | 'workspace' | 'surveys' | 'reports' | 'settings' | 'feedback' | 'submissions' | 'documentation' | 'landing';
+  setCurrentView: (view: 'dashboard' | 'projects' | 'workspace' | 'surveys' | 'reports' | 'settings' | 'feedback' | 'submissions' | 'documentation' | 'landing') => void;
   onNewProject: () => void;
   activeProjectName?: string;
   hasActiveProject: boolean;
@@ -59,6 +59,16 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center space-x-1">
+              <button
+                onClick={() => setCurrentView('landing')}
+                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
+                  currentView === 'landing'
+                    ? 'text-indigo-700 dark:text-indigo-300 bg-indigo-50/80 dark:bg-indigo-950/60 font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                Home
+              </button>
               <button
                 onClick={() => setCurrentView('dashboard')}
                 className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
@@ -116,6 +126,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 Insights & Reports
+              </button>
+              <button
+                onClick={() => setCurrentView('documentation')}
+                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center space-x-1 ${
+                  currentView === 'documentation'
+                    ? 'text-indigo-700 dark:text-indigo-300 bg-indigo-50/80 dark:bg-indigo-950/60 font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                <FileText className="w-4 h-4 text-indigo-500 inline mr-1" />
+                <span>Docs</span>
               </button>
             </nav>
           </div>

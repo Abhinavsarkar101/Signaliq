@@ -1027,4 +1027,33 @@ export const api = {
     saveLocalData(local);
     return optOuts;
   },
+
+  async ingestOmnichannelSource(projectId: string, params: { sourceType: string; title: string; content: string; appId?: string }): Promise<any> {
+    const data = await safeFetch(`/api/projects/${projectId}/feedback-hub/ingest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    if (data?.success) return data;
+    throw new Error(data?.error || 'Failed to ingest source');
+  },
+
+  async analyzeOmnichannelFeedback(projectId: string): Promise<any> {
+    const data = await safeFetch(`/api/projects/${projectId}/feedback-hub/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (data?.success) return data;
+    throw new Error(data?.error || 'Failed to analyze feedback');
+  },
+
+  async autoSyncFeedback(projectId: string): Promise<any> {
+    const data = await safeFetch(`/api/projects/${projectId}/feedback-hub/autosync`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (data?.success) return data;
+    throw new Error(data?.error || 'Failed to auto-sync');
+  },
 };
+

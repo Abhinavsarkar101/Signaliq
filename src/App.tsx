@@ -14,12 +14,14 @@ import { NewProjectModal } from './components/NewProjectModal';
 import { PublicSurveyView } from './components/PublicSurveyView';
 import { FeedbackExplorerView } from './components/FeedbackExplorerView';
 import { SubmissionsExplorerView } from './components/SubmissionsExplorerView';
+import { DocumentationView } from './components/DocumentationView';
+import { LandingPageView } from './components/LandingPageView';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<
-    'dashboard' | 'projects' | 'workspace' | 'surveys' | 'reports' | 'settings' | 'feedback' | 'submissions'
-  >('dashboard');
+    'dashboard' | 'projects' | 'workspace' | 'surveys' | 'reports' | 'settings' | 'feedback' | 'submissions' | 'documentation' | 'landing'
+  >('landing');
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [surveys, setSurveys] = useState<Survey[]>([]);
@@ -35,8 +37,8 @@ export default function App() {
     totalFeedbackRecords: 0,
   });
 
-  // Direct Survey Link detection (e.g. #survey-srv_...)
   const [directRespondentSurvey, setDirectRespondentSurvey] = useState<Survey | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const loadData = async () => {
     setIsLoading(true);
@@ -191,6 +193,24 @@ export default function App() {
     );
   }
 
+  if (currentView === 'landing') {
+    return (
+      <LandingPageView
+        onEnterApp={() => {
+          setIsLoggedIn(true);
+          setCurrentView('dashboard');
+        }}
+        onOpenDocs={() => setCurrentView('documentation')}
+      />
+    );
+  }
+
+  // If not logged in and trying to access anything other than landing or documentation, redirect to landing
+  if (!isLoggedIn && currentView !== 'documentation') {
+    setCurrentView('landing');
+    return null; // Will trigger re-render with landing view
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
       {/* Navigation Header */}
@@ -206,6 +226,7 @@ export default function App() {
         activeProjectName={activeProject?.name}
         hasActiveProject={Boolean(activeProject)}
       />
+...
 
       {/* Global Error Banner if any */}
       {errorMessage && (
@@ -288,6 +309,8 @@ export default function App() {
             onOpenReport={handleOpenReport}
           />
         )}
+
+        {currentView === 'documentation' && <DocumentationView />}
 
         {currentView === 'settings' && <SettingsView />}
       </div>
