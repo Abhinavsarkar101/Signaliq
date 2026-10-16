@@ -9,6 +9,7 @@ import {
   Settings as SettingsIcon,
   Sun,
   Moon,
+  LogOut,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -18,6 +19,7 @@ interface NavbarProps {
   onNewProject: () => void;
   activeProjectName?: string;
   hasActiveProject: boolean;
+  onLogout: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -26,6 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNewProject,
   activeProjectName,
   hasActiveProject,
+  onLogout,
 }) => {
   const { isDark, toggleTheme } = useTheme();
 
@@ -167,6 +170,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             >
               <SettingsIcon className="w-5 h-5" />
+            </button>
+            <button
+              onClick={onLogout}
+              title="Logout"
+              className="p-2 rounded-lg text-rose-500 dark:text-rose-400 hover:text-rose-800 dark:hover:text-rose-100 hover:bg-rose-50 dark:hover:bg-rose-950 transition-colors cursor-pointer flex items-center justify-center"
+            >
+              <LogOut className="w-5 h-5" />
             </button>
 
             <button

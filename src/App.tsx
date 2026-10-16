@@ -211,6 +211,11 @@ export default function App() {
     return null; // Will trigger re-render with landing view
   }
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setCurrentView('landing');
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
       {/* Navigation Header */}
@@ -225,6 +230,7 @@ export default function App() {
         onNewProject={() => setIsNewProjectModalOpen(true)}
         activeProjectName={activeProject?.name}
         hasActiveProject={Boolean(activeProject)}
+        onLogout={handleLogout}
       />
 ...
 

@@ -215,10 +215,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
               <Compass className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-              <span>One-Click Test Scenarios (AC Verification)</span>
+              <span>Test Scenarios</span>
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Instantly test SignalIQ against the key acceptance criteria scenarios with synthetic data.
+              Run pre-loaded scenarios with synthetic data.
             </p>
           </div>
         </div>
