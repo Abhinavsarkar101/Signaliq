@@ -180,6 +180,7 @@ export const ResearchWorkspace: React.FC<ResearchWorkspaceProps> = ({
             onUpdateProject={onUpdateProject}
             onRunAnalysis={handleRunAnalysis}
             isAnalyzing={isAnalyzing}
+            onNextStep={() => setActiveStep('feedback_hub')}
           />
         )}
 

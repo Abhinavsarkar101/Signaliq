@@ -24,6 +24,7 @@ interface EvidenceUploadStepProps {
   onUpdateProject: (updated: Partial<Project>) => Promise<void>;
   onRunAnalysis: () => Promise<void>;
   isAnalyzing: boolean;
+  onNextStep: () => void;
 }
 
 export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
@@ -31,6 +32,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
   onUpdateProject,
   onRunAnalysis,
   isAnalyzing,
+  onNextStep,
 }) => {
   const [sources, setSources] = useState<EvidenceSource[]>(project.sources || []);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -529,24 +531,33 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               Ready to process <strong className="text-slate-800">{sources.length}</strong> sources with Gemini AI.
             </div>
 
-            <button
-              onClick={onRunAnalysis}
-              disabled={isAnalyzing}
-              className="inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs shadow-indigo-200 transition-all cursor-pointer disabled:opacity-60"
-            >
-              {isAnalyzing ? (
-                <>
-                  <Sparkles className="w-4 h-4 animate-spin" />
-                  <span>Processing Feedback & Sufficiency...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4" />
-                  <span>Run Feedback Intelligence Analysis</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onNextStep}
+                className="inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-all cursor-pointer"
+              >
+                <span>Next Step</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={onRunAnalysis}
+                disabled={isAnalyzing}
+                className="inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs shadow-indigo-200 transition-all cursor-pointer disabled:opacity-60"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Sparkles className="w-4 h-4 animate-spin" />
+                    <span>Processing Feedback & Sufficiency...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    <span>Run Feedback Intelligence Analysis</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       ) : (

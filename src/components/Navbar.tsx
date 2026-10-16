@@ -63,16 +63,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center space-x-1">
               <button
-                onClick={() => setCurrentView('landing')}
-                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                  currentView === 'landing'
-                    ? 'text-indigo-700 dark:text-indigo-300 bg-indigo-50/80 dark:bg-indigo-950/60 font-semibold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800'
-                }`}
-              >
-                Home
-              </button>
-              <button
                 onClick={() => setCurrentView('dashboard')}
                 className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
                   currentView === 'dashboard'

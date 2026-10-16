@@ -16,6 +16,7 @@ import { FeedbackExplorerView } from './components/FeedbackExplorerView';
 import { SubmissionsExplorerView } from './components/SubmissionsExplorerView';
 import { DocumentationView } from './components/DocumentationView';
 import { LandingPageView } from './components/LandingPageView';
+import { OnboardingQuestions } from './components/OnboardingQuestions';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function App() {
@@ -39,6 +40,8 @@ export default function App() {
 
   const [directRespondentSurvey, setDirectRespondentSurvey] = useState<Survey | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+  const [userProfile, setUserProfile] = useState<Record<string, string>>({});
 
   const loadData = async () => {
     setIsLoading(true);
@@ -205,16 +208,51 @@ export default function App() {
     );
   }
 
-  // If not logged in and trying to access anything other than landing or documentation, redirect to landing
-  if (!isLoggedIn && currentView !== 'documentation') {
+  if (currentView === 'documentation') {
+    return (
+      <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
+        <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-xs">
+          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setCurrentView(isLoggedIn ? 'dashboard' : 'landing')}>
+            <span className="font-extrabold text-xl tracking-tight text-slate-900">
+              Signal<span className="text-indigo-600">IQ</span>
+            </span>
+          </div>
+          <button
+            onClick={() => setCurrentView(isLoggedIn ? 'dashboard' : 'landing')}
+            className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition cursor-pointer"
+          >
+            &larr; Back to {isLoggedIn ? 'Dashboard' : 'Home'}
+          </button>
+        </header>
+        <main className="flex-1 py-8">
+          <DocumentationView />
+        </main>
+      </div>
+    );
+  }
+
+  // If not logged in and trying to access anything other than landing, redirect to landing
+  if (!isLoggedIn) {
     setCurrentView('landing');
     return null; // Will trigger re-render with landing view
   }
 
   const handleLogout = () => {
     setIsLoggedIn(false);
+    setHasCompletedOnboarding(false);
     setCurrentView('landing');
   };
+
+  if (isLoggedIn && !hasCompletedOnboarding) {
+    return (
+      <OnboardingQuestions 
+        onComplete={(answers) => {
+          setUserProfile(answers);
+          setHasCompletedOnboarding(true);
+        }} 
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
@@ -316,7 +354,12 @@ export default function App() {
           />
         )}
 
-        {currentView === 'documentation' && <DocumentationView />}
+        {currentView === 'reports' && (
+          <ReportsView
+            projects={projects}
+            onOpenReport={handleOpenReport}
+          />
+        )}
 
         {currentView === 'settings' && <SettingsView />}
       </div>
