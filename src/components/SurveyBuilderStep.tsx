@@ -3,6 +3,7 @@ import { Project, Survey, SurveyQuestion, QuestionType } from '../types';
 import { api } from '../lib/api';
 import { PublicSurveyView } from './PublicSurveyView';
 import { EmailModal } from './EmailModal';
+import { HelpTooltip } from './HelpTooltip';
 import {
   Sparkles,
   Plus,
@@ -150,7 +151,14 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
       questions: [...survey.questions, newQ],
     };
     setSurvey(updated);
-    api.saveSurvey(updated);
+    setEditingQuestionId(newQ.id);
+  };
+
+  const handleUpdateQuestion = (qId: string, updates: Partial<SurveyQuestion>) => {
+    if (!survey) return;
+    const updatedQuestions = survey.questions.map((q) => (q.id === qId ? { ...q, ...updates } : q));
+    const updated = { ...survey, questions: updatedQuestions };
+    setSurvey(updated);
   };
 
   const handleDeleteQuestion = (qId: string) => {
@@ -160,32 +168,17 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
       questions: survey.questions.filter((q) => q.id !== qId),
     };
     setSurvey(updated);
-    api.saveSurvey(updated);
   };
 
   const handleMoveQuestion = (index: number, direction: 'up' | 'down') => {
     if (!survey) return;
+    const newQuestions = [...survey.questions];
     const targetIdx = direction === 'up' ? index - 1 : index + 1;
-    if (targetIdx < 0 || targetIdx >= survey.questions.length) return;
-
-    const list = [...survey.questions];
-    const temp = list[index];
-    list[index] = list[targetIdx];
-    list[targetIdx] = temp;
-
-    const updated = { ...survey, questions: list };
-    setSurvey(updated);
-    api.saveSurvey(updated);
-  };
-
-  const handleUpdateQuestion = (qId: string, updates: Partial<SurveyQuestion>) => {
-    if (!survey) return;
-    const updated = {
-      ...survey,
-      questions: survey.questions.map((q) => (q.id === qId ? { ...q, ...updates } : q)),
-    };
-    setSurvey(updated);
-    api.saveSurvey(updated);
+    if (targetIdx < 0 || targetIdx >= newQuestions.length) return;
+    const temp = newQuestions[index];
+    newQuestions[index] = newQuestions[targetIdx];
+    newQuestions[targetIdx] = temp;
+    setSurvey({ ...survey, questions: newQuestions });
   };
 
   const handleFetchResponses = async () => {
@@ -210,22 +203,25 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-slate-900 dark:text-slate-100">
       {/* If No Survey Yet: Generation Banner */}
       {!survey ? (
-        <div className="bg-gradient-to-br from-indigo-50/80 via-white to-sky-50/70 rounded-2xl border border-indigo-100 p-8 text-center space-y-4 shadow-xs">
-          <div className="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto shadow-md shadow-indigo-100">
+        <div className="bg-gradient-to-br from-indigo-50/80 via-white to-sky-50/70 dark:from-indigo-950/50 dark:via-slate-900 dark:to-sky-950/40 rounded-2xl border border-indigo-100 dark:border-indigo-900 p-8 text-center space-y-4 shadow-xs">
+          <div className="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto shadow-md shadow-indigo-100 dark:shadow-none">
             <Sparkles className="w-6 h-6" />
           </div>
           <div className="max-w-md mx-auto">
-            <h3 className="text-lg font-bold text-slate-900">Generate Targeted Research Survey</h3>
-            <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+            <div className="flex items-center justify-center gap-1.5">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Generate Targeted Research Survey</h3>
+              <HelpTooltip content="Automatically formulates focused questions to resolve unanswered blind spots identified in evidence analysis." />
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">
               Based on the specific knowledge gaps identified in your evidence analysis, SignalIQ drafts neutral, focused survey questions to resolve outstanding questions.
             </p>
           </div>
 
           {error && (
-            <div className="max-w-md mx-auto p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700">
+            <div className="max-w-md mx-auto p-3 bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 rounded-lg text-xs text-rose-700 dark:text-rose-300">
               {error}
             </div>
           )}
@@ -234,7 +230,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
             <button
               onClick={handleGenerateSurvey}
               disabled={isGenerating}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-200 transition-all cursor-pointer disabled:opacity-60"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-200 dark:shadow-none transition-all cursor-pointer disabled:opacity-60"
             >
               {isGenerating ? (
                 <>
@@ -251,7 +247,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
 
             <button
               onClick={onProceedToReport}
-              className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
               Skip Survey & Go to Report
             </button>
@@ -260,25 +256,28 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
       ) : (
         <div className="space-y-6">
           {/* Survey Control & Status Bar */}
-          <div className="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center space-x-2.5">
                 <span
                   className={`px-2 py-0.5 text-[10px] font-extrabold uppercase rounded-sm ${
                     survey.status === 'published'
-                      ? 'bg-emerald-100 text-emerald-800 animate-pulse'
+                      ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 animate-pulse border border-emerald-200 dark:border-emerald-800'
                       : survey.status === 'closed'
-                      ? 'bg-slate-200 text-slate-700'
-                      : 'bg-amber-100 text-amber-800'
+                      ? 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                      : 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
                   }`}
                 >
                   {survey.status}
                 </span>
-                <h3 className="text-base font-bold text-slate-900">{survey.title}</h3>
+                <div className="flex items-center gap-1.5">
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">{survey.title}</h3>
+                  <HelpTooltip content="Research survey tailored to close specific qualitative knowledge gaps." />
+                </div>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Created to resolve:{' '}
-                <strong className="text-slate-700">
+                <strong className="text-slate-700 dark:text-slate-200">
                   {project.analysis?.sufficiencyAssessment?.whatRemainsUnknown?.[0] || project.objective}
                 </strong>
               </p>
@@ -288,7 +287,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setShowRespondentModal(true)}
-                className="px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center space-x-1.5 cursor-pointer"
+                className="px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg flex items-center space-x-1.5 cursor-pointer"
               >
                 <Eye className="w-3.5 h-3.5" />
                 <span>Test as Respondent</span>
@@ -306,7 +305,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                 <>
                   <button
                     onClick={() => setShowEmailModal(true)}
-                    className="px-3 py-2 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg flex items-center space-x-1.5 cursor-pointer"
+                    className="px-3 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 rounded-lg flex items-center space-x-1.5 cursor-pointer"
                   >
                     <Mail className="w-3.5 h-3.5" />
                     <span>Distribute</span>
@@ -314,7 +313,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
 
                   <button
                     onClick={handleCopyLink}
-                    className="px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center space-x-1.5 cursor-pointer"
+                    className="px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg flex items-center space-x-1.5 cursor-pointer"
                   >
                     {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copiedLink ? 'Copied Link' : 'Copy Link'}</span>
@@ -322,7 +321,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
 
                   <button
                     onClick={handleCloseSurvey}
-                    className="px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg cursor-pointer"
+                    className="px-3 py-2 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer"
                   >
                     Close Survey
                   </button>
@@ -330,7 +329,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
               ) : (
                 <button
                   onClick={handlePublishSurvey}
-                  className="px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer"
+                  className="px-3 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer"
                 >
                   Re-open Survey
                 </button>
@@ -339,31 +338,32 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
           </div>
 
           {error && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-center space-x-2">
+            <div className="p-3 bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 rounded-lg text-xs text-rose-700 dark:text-rose-300 flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {/* Survey Questions List */}
-          <div className="bg-white rounded-xl border border-slate-200 shadow-xs divide-y divide-slate-100">
-            <div className="px-5 py-4 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="px-5 py-4 bg-slate-50/70 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Layers className="w-4 h-4 text-indigo-600" />
-                <h4 className="text-sm font-bold text-slate-900">
+                <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                   Targeted Survey Questions ({survey.questions.length})
                 </h4>
+                <HelpTooltip content="Questions crafted with neutral framing to avoid confirmation bias while gathering missing data." />
               </div>
               <button
                 onClick={handleAddQuestion}
-                className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center space-x-1 cursor-pointer"
+                className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 flex items-center space-x-1 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Question</span>
               </button>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-100 dark:divide-slate-800">
               {survey.questions.map((q, idx) => {
                 const isEditing = editingQuestionId === q.id;
                 return (
@@ -376,11 +376,11 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                               type="text"
                               value={q.text}
                               onChange={(e) => handleUpdateQuestion(q.id, { text: e.target.value })}
-                              className="w-full text-sm font-bold p-2 border border-indigo-300 rounded-lg"
+                              className="w-full text-sm font-bold p-2 border border-indigo-300 dark:border-indigo-700 rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-white"
                             />
                             <div className="grid grid-cols-2 gap-3 text-xs">
                               <div>
-                                <label className="block text-slate-500 mb-1">Question Type</label>
+                                <label className="block text-slate-500 dark:text-slate-400 mb-1">Question Type</label>
                                 <select
                                   value={q.type}
                                   onChange={(e) =>
@@ -392,7 +392,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                                           : undefined,
                                     })
                                   }
-                                  className="w-full p-1.5 border border-slate-300 rounded-md bg-white"
+                                  className="w-full p-1.5 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                                 >
                                   <option value="single_choice">Single Choice (Radio)</option>
                                   <option value="multiple_choice">Multiple Choice (Checkboxes)</option>
@@ -404,7 +404,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                               </div>
 
                               <div className="flex items-center space-x-2 pt-4">
-                                <label className="flex items-center space-x-1.5 text-xs text-slate-700 cursor-pointer">
+                                <label className="flex items-center space-x-1.5 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
                                   <input
                                     type="checkbox"
                                     checked={q.required}
@@ -419,7 +419,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                             {/* Options if choice question */}
                             {(q.type === 'single_choice' || q.type === 'multiple_choice') && (
                               <div className="space-y-1.5">
-                                <label className="block text-xs font-semibold text-slate-600">Answer Options:</label>
+                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400">Answer Options:</label>
                                 {q.options?.map((opt, oIdx) => (
                                   <div key={oIdx} className="flex items-center space-x-2">
                                     <input
@@ -430,7 +430,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                                         newOpts[oIdx] = e.target.value;
                                         handleUpdateQuestion(q.id, { options: newOpts });
                                       }}
-                                      className="flex-1 text-xs p-1.5 border border-slate-200 rounded-md"
+                                      className="flex-1 text-xs p-1.5 border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                                     />
                                     <button
                                       onClick={() => {
@@ -450,7 +450,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                                       options: [...(q.options || []), `Option ${(q.options?.length || 0) + 1}`],
                                     });
                                   }}
-                                  className="text-xs text-indigo-600 hover:underline"
+                                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
                                 >
                                   + Add option
                                 </button>
@@ -469,20 +469,20 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                         ) : (
                           <div>
                             <div className="flex items-center space-x-2">
-                              <span className="w-5 h-5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold flex items-center justify-center shrink-0">
+                              <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center justify-center shrink-0">
                                 {idx + 1}
                               </span>
-                              <h5 className="text-sm font-bold text-slate-900">
+                              <h5 className="text-sm font-bold text-slate-900 dark:text-white">
                                 {q.text} {q.required && <span className="text-rose-500">*</span>}
                               </h5>
-                              <span className="text-[10px] uppercase font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-sm">
+                              <span className="text-[10px] uppercase font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-sm">
                                 {q.type.replace('_', ' ')}
                               </span>
                             </div>
 
-                            {/* Addresses Knowledge Gap Callout (AC-06.3) */}
-                            <div className="mt-2 ml-7 p-2 bg-indigo-50/60 rounded-md border border-indigo-100/70 text-[11px] text-indigo-900">
-                              <strong className="text-indigo-800">Addresses Research Gap: </strong>
+                            {/* Addresses Knowledge Gap Callout */}
+                            <div className="mt-2 ml-7 p-2 bg-indigo-50/60 dark:bg-indigo-950/40 rounded-md border border-indigo-100/70 dark:border-indigo-900/60 text-[11px] text-indigo-900 dark:text-indigo-300">
+                              <strong className="text-indigo-800 dark:text-indigo-200">Addresses Research Gap: </strong>
                               {q.addressesResearchGap}
                             </div>
 
@@ -492,7 +492,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                                 {q.options.map((opt, oIdx) => (
                                   <span
                                     key={oIdx}
-                                    className="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md text-xs font-medium"
+                                    className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-md text-xs font-medium border border-slate-200/50 dark:border-slate-700"
                                   >
                                     {opt}
                                   </span>
@@ -508,7 +508,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                         <button
                           onClick={() => handleMoveQuestion(idx, 'up')}
                           disabled={idx === 0}
-                          className="p-1 text-slate-400 hover:text-slate-700 disabled:opacity-30 cursor-pointer"
+                          className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 disabled:opacity-30 cursor-pointer"
                           title="Move up"
                         >
                           <ArrowUp className="w-4 h-4" />
@@ -516,14 +516,14 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                         <button
                           onClick={() => handleMoveQuestion(idx, 'down')}
                           disabled={idx === survey.questions.length - 1}
-                          className="p-1 text-slate-400 hover:text-slate-700 disabled:opacity-30 cursor-pointer"
+                          className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 disabled:opacity-30 cursor-pointer"
                           title="Move down"
                         >
                           <ArrowDown className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setEditingQuestionId(isEditing ? null : q.id)}
-                          className="p-1 text-slate-400 hover:text-indigo-600 cursor-pointer"
+                          className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer"
                           title="Edit question"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -543,22 +543,25 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
             </div>
           </div>
 
-          {/* Actual Collected Responses Viewer (FR-07 / AC-07.6 / AC-07.7) */}
-          <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          {/* Actual Collected Responses Viewer */}
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs p-5 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center space-x-2.5">
-                <CheckCircle2 className="w-5 h-5 text-indigo-600" />
+                <CheckCircle2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">
-                    Collected Survey Responses ({survey.responseCount || 0})
-                  </h4>
-                  <p className="text-xs text-slate-500">Real respondent submissions stored in database</p>
+                  <div className="flex items-center space-x-1.5">
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                      Collected Survey Responses ({survey.responseCount || 0})
+                    </h4>
+                    <HelpTooltip content="Real respondent submissions captured from public survey links and email distributions." />
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Real respondent submissions stored in database</p>
                 </div>
               </div>
 
               <button
                 onClick={handleFetchResponses}
-                className="text-xs font-semibold text-indigo-600 hover:underline cursor-pointer"
+                className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
               >
                 {isLoadingResponses ? 'Loading...' : 'Refresh Responses'}
               </button>
@@ -566,22 +569,22 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
 
             {responses.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border border-slate-200">
-                  <thead className="bg-slate-100 text-slate-700">
+                <table className="w-full text-left text-xs border border-slate-200 dark:border-slate-800">
+                  <thead className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                     <tr>
-                      <th className="p-2 border-b">Respondent ID</th>
-                      <th className="p-2 border-b">Submitted At</th>
+                      <th className="p-2 border-b border-slate-200 dark:border-slate-700">Respondent ID</th>
+                      <th className="p-2 border-b border-slate-200 dark:border-slate-700">Submitted At</th>
                       {survey.questions.map((q) => (
-                        <th key={q.id} className="p-2 border-b max-w-xs truncate">
+                        <th key={q.id} className="p-2 border-b border-slate-200 dark:border-slate-700 max-w-xs truncate">
                           {q.text}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {responses.map((resp) => (
-                      <tr key={resp.id} className="hover:bg-slate-50">
-                        <td className="p-2 font-mono font-medium text-slate-600">{resp.id}</td>
+                      <tr key={resp.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                        <td className="p-2 font-mono font-medium text-slate-600 dark:text-slate-400">{resp.id}</td>
                         <td className="p-2 text-slate-400">
                           {new Date(resp.submittedAt).toLocaleTimeString()}
                         </td>
@@ -589,7 +592,7 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                           const val = resp.answers[q.id];
                           const display = Array.isArray(val) ? val.join(', ') : String(val ?? '-');
                           return (
-                            <td key={q.id} className="p-2 max-w-xs truncate">
+                            <td key={q.id} className="p-2 max-w-xs truncate text-slate-800 dark:text-slate-200">
                               {display}
                             </td>
                           );
@@ -600,14 +603,14 @@ export const SurveyBuilderStep: React.FC<SurveyBuilderStepProps> = ({
                 </table>
               </div>
             ) : (
-              <div className="text-center py-6 text-slate-400 text-xs">
+              <div className="text-center py-6 text-slate-400 dark:text-slate-500 text-xs">
                 <p>No submitted responses yet. Use "Test as Respondent" to submit a test response.</p>
               </div>
             )}
           </div>
 
           {/* Navigation to Report */}
-          <div className="pt-3 border-t border-slate-200 flex justify-end">
+          <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
             <button
               onClick={onProceedToReport}
               className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs cursor-pointer"

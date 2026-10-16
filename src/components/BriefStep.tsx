@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Project, ResearchBrief } from '../types';
 import { api } from '../lib/api';
+import { HelpTooltip } from './HelpTooltip';
 import {
   Sparkles,
   CheckCircle2,
@@ -21,15 +22,6 @@ import {
   Clock,
   ShieldCheck,
 } from 'lucide-react';
-
-const HelpTooltip = ({ content }: { content: string }) => (
-  <div className="group relative inline-flex items-center">
-    <HelpCircle className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 cursor-help" />
-    <div className="absolute left-6 top-0 w-64 p-3 bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
-      {content}
-    </div>
-  </div>
-);
 
 interface BriefStepProps {
   project: Project;
@@ -266,36 +258,48 @@ export const BriefStep: React.FC<BriefStepProps> = ({
             {/* 4 Metadata Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
-                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">
-                  Product / Service
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">
+                    Product / Service
+                  </span>
+                  <HelpTooltip content="The name of your application or product being analyzed in this study." />
+                </div>
                 <p className="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200 mt-0.5 truncate">
                   {project.productName || 'General Product'}
                 </p>
               </div>
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
-                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">
-                  Target Customer Segment
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">
+                    Target Customer Segment
+                  </span>
+                  <HelpTooltip content="The specific user cohort or demographic targeted by this research project." />
+                </div>
                 <p className="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200 mt-0.5 truncate">
                   {project.customerSegment || 'All Active Users'}
                 </p>
               </div>
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
-                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">
-                  Study Category
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">
+                    Study Category
+                  </span>
+                  <HelpTooltip content="The primary category of research (e.g., onboarding, conversion, UX, churn prevention)." />
+                </div>
                 <p className="font-bold text-xs sm:text-sm capitalize text-slate-800 dark:text-slate-200 mt-0.5 truncate">
                   {project.category}
                 </p>
               </div>
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
-                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">
-                  Desired Outcome
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">
+                    Desired Outcome
+                  </span>
+                  <HelpTooltip content="The specific decision, insight, or metric improvement you aim to achieve." />
+                </div>
                 <p className="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200 mt-0.5 truncate" title={project.desiredOutcome || 'Actionable recommendations'}>
                   {project.desiredOutcome || 'Actionable recommendations'}
                 </p>
@@ -303,9 +307,12 @@ export const BriefStep: React.FC<BriefStepProps> = ({
             </div>
 
             {project.businessContext && (
-              <div className="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400">
-                <strong className="text-slate-700 dark:text-slate-300">Business Context: </strong>
-                {project.businessContext}
+              <div className="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex items-start justify-between">
+                <div>
+                  <strong className="text-slate-700 dark:text-slate-300">Business Context: </strong>
+                  {project.businessContext}
+                </div>
+                <HelpTooltip content="Recent events, metrics variance, or background explaining why this study is needed now." />
               </div>
             )}
           </div>
@@ -430,7 +437,7 @@ export const BriefStep: React.FC<BriefStepProps> = ({
                   <HelpTooltip content="The central research hypothesis or main problem statement that this research project aims to solve." />
                 </div>
               </div>
-              <p className="text-base sm:text-lg font-bold text-indigo-950 dark:text-indigo-200 bg-indigo-50/70 dark:bg-indigo-950/40 p-4 rounded-xl border border-indigo-100 dark:border-indigo-900/60 leading-relaxed">
+              <p className="text-base sm:text-lg font-bold text-slate-900 dark:text-white bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 leading-relaxed shadow-2xs">
                 {brief.primaryQuestion}
               </p>
             </div>
@@ -500,6 +507,7 @@ export const BriefStep: React.FC<BriefStepProps> = ({
                 <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center space-x-2">
                   <Compass className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                   <span>Specific Questions This Research Must Answer</span>
+                  <HelpTooltip content="Granular, investigative questions derived by AI from your primary hypothesis to guide evidence synthesis." />
                 </span>
                 <span className="text-xs text-slate-400 font-medium">
                   {brief.subQuestions?.length || 0} sub-questions derived
@@ -526,11 +534,14 @@ export const BriefStep: React.FC<BriefStepProps> = ({
             {/* 4. Required Info & Signals Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-3">
-                <div className="flex items-center space-x-2">
-                  <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                    Required Information & Data Points
-                  </span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                      Required Information & Data Points
+                    </span>
+                  </div>
+                  <HelpTooltip content="Specific data attributes or information types needed in your files to answer the research questions." />
                 </div>
                 <ul className="space-y-2 text-xs text-slate-600 dark:text-slate-400">
                   {brief.requiredInfo?.map((item, idx) => (
@@ -543,11 +554,14 @@ export const BriefStep: React.FC<BriefStepProps> = ({
               </div>
 
               <div className="p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-3">
-                <div className="flex items-center space-x-2">
-                  <Target className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                    Customer Signals to Investigate
-                  </span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Target className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                      Customer Signals to Investigate
+                    </span>
+                  </div>
+                  <HelpTooltip content="Specific behavioral patterns, sentiment trends, or friction points to look for in the feedback." />
                 </div>
                 <ul className="space-y-2 text-xs text-slate-600 dark:text-slate-400">
                   {brief.signalsToInvestigate?.map((item, idx) => (
@@ -562,15 +576,18 @@ export const BriefStep: React.FC<BriefStepProps> = ({
 
             {/* 5. Identified Limitations & Missing Context */}
             {brief.limitationsAndAmbiguities && brief.limitationsAndAmbiguities.length > 0 && (
-              <div className="p-5 bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 rounded-2xl space-y-2.5">
-                <div className="flex items-center space-x-2 text-amber-900 dark:text-amber-200 text-xs font-bold uppercase tracking-wider">
-                  <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                  <span>Known Data Limitations & Potential Blindspots</span>
+              <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-2.5 shadow-2xs border-l-4 border-l-amber-500">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 text-slate-900 dark:text-white text-xs font-bold uppercase tracking-wider">
+                    <ShieldAlert className="w-4 h-4 text-amber-500 shrink-0" />
+                    <span>Known Data Limitations & Potential Blindspots</span>
+                  </div>
+                  <HelpTooltip content="Risks, missing dimensions, or sampling biases that may limit the accuracy of findings." />
                 </div>
-                <p className="text-xs text-amber-800/90 dark:text-amber-300">
+                <p className="text-xs text-slate-600 dark:text-slate-400">
                   The AI identified the following constraints in your current research scope:
                 </p>
-                <ul className="space-y-1 text-xs text-amber-900 dark:text-amber-200 list-disc list-inside">
+                <ul className="space-y-1 text-xs text-slate-800 dark:text-slate-200 list-disc list-inside">
                   {brief.limitationsAndAmbiguities.map((lim, idx) => (
                     <li key={idx}>{lim}</li>
                   ))}
@@ -579,34 +596,40 @@ export const BriefStep: React.FC<BriefStepProps> = ({
             )}
 
             {/* 6. Clarification Questions & User Input */}
-            <div className="p-5 bg-sky-50/70 dark:bg-sky-950/30 border border-sky-200/80 dark:border-sky-900/60 rounded-2xl space-y-3">
-              <div className="flex items-center space-x-2 text-sky-950 dark:text-sky-200 text-xs font-bold uppercase tracking-wider">
-                <HelpCircle className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0" />
-                <span>AI Clarification Requests for the User</span>
+            <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3 shadow-2xs border-l-4 border-l-sky-500">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2 text-slate-900 dark:text-white text-xs font-bold uppercase tracking-wider">
+                  <HelpCircle className="w-4 h-4 text-sky-500 shrink-0" />
+                  <span>AI Clarification Requests for the User</span>
+                </div>
+                <HelpTooltip content="Questions generated by AI to resolve ambiguities in your brief before evidence is analyzed." />
               </div>
               
               {brief.clarificationQuestions && brief.clarificationQuestions.length > 0 ? (
                 <div className="space-y-1.5">
-                  <p className="text-xs text-sky-900 dark:text-sky-300 font-medium">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
                     To make the upcoming analysis as accurate as possible, consider these questions:
                   </p>
-                  <ul className="space-y-1 text-xs text-sky-800 dark:text-sky-300 list-disc list-inside">
+                  <ul className="space-y-1 text-xs text-slate-800 dark:text-slate-200 list-disc list-inside">
                     {brief.clarificationQuestions.map((q, idx) => (
                       <li key={idx} className="font-semibold">{q}</li>
                     ))}
                   </ul>
                 </div>
               ) : (
-                <p className="text-xs text-sky-800 dark:text-sky-300">
+                <p className="text-xs text-slate-600 dark:text-slate-400">
                   No critical ambiguities detected. You can add optional notes or edge cases below.
                 </p>
               )}
 
               <div className="pt-2">
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                    Your Additional Research Notes & Clarifications (Optional)
-                  </label>
+                  <div className="flex items-center space-x-1.5">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      Your Additional Research Notes & Clarifications (Optional)
+                    </label>
+                    <HelpTooltip content="Provide domain nuances, exclusions, or instructions that feed directly into upcoming analysis synthesis." />
+                  </div>
                   {notesSavedSuccess && (
                     <span className="text-xs font-bold text-emerald-600 flex items-center space-x-1">
                       <Check className="w-3.5 h-3.5" />
@@ -636,15 +659,15 @@ export const BriefStep: React.FC<BriefStepProps> = ({
             </div>
 
             {/* 7. Recommended Focus */}
-            <div className="p-4 bg-indigo-50/70 dark:bg-indigo-950/40 rounded-xl border border-indigo-100 dark:border-indigo-900/50 flex items-start space-x-3">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex items-start space-x-3 shadow-2xs border-l-4 border-l-indigo-500">
               <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5">
                 <Target className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide block">
+                <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide block">
                   AI Strategic Focus Recommendation:
                 </span>
-                <p className="text-xs sm:text-sm text-indigo-950 dark:text-indigo-200 font-semibold mt-0.5">
+                <p className="text-xs sm:text-sm text-slate-900 dark:text-white font-semibold mt-0.5">
                   {brief.recommendedFocus}
                 </p>
               </div>

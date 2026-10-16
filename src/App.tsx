@@ -210,16 +210,16 @@ export default function App() {
 
   if (currentView === 'documentation') {
     return (
-      <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
-        <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-xs">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
+        <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between shadow-xs">
           <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setCurrentView(isLoggedIn ? 'dashboard' : 'landing')}>
-            <span className="font-extrabold text-xl tracking-tight text-slate-900">
-              Signal<span className="text-indigo-600">IQ</span>
+            <span className="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">
+              Signal<span className="text-indigo-600 dark:text-indigo-400">IQ</span>
             </span>
           </div>
           <button
             onClick={() => setCurrentView(isLoggedIn ? 'dashboard' : 'landing')}
-            className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition cursor-pointer"
           >
             &larr; Back to {isLoggedIn ? 'Dashboard' : 'Home'}
           </button>
@@ -345,13 +345,6 @@ export default function App() {
             onBackToDashboard={() => setCurrentView('dashboard')}
             onOpenSurvey={() => setCurrentView('surveys')}
             onOpenProjectWorkspace={handleOpenProject}
-          />
-        )}
-
-        {currentView === 'reports' && (
-          <ReportsView
-            projects={projects}
-            onOpenReport={handleOpenReport}
           />
         )}
 

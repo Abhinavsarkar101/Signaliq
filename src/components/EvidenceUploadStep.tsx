@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Project, EvidenceSource } from '../types';
 import { parseFileContent, parseCsvString } from '../lib/csvParser';
 import { SAMPLE_DATASETS, SampleDataset } from '../lib/sampleData';
+import { HelpTooltip } from './HelpTooltip';
 import {
   UploadCloud,
   FileSpreadsheet,
@@ -250,13 +251,18 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
   return (
     <div className="space-y-6">
       {/* Upload Zone Card */}
-      <div className="bg-white rounded-xl border border-slate-200/90 shadow-xs p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
-          <div>
-            <h3 className="text-base font-bold text-slate-900">Upload Evidence & Feedback Sources</h3>
-            <p className="text-xs text-slate-500">
-              Upload existing support tickets, CSV/Excel feedback files, interview transcripts, or heatmap screenshots.
-            </p>
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs p-6 text-slate-900 dark:text-slate-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex items-center space-x-2">
+            <div>
+              <div className="flex items-center space-x-1">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Upload Evidence & Feedback Sources</h3>
+                <HelpTooltip content="Upload raw data files, transcripts, or reports to feed into the AI analysis engine." />
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Upload existing support tickets, CSV/Excel feedback files, interview transcripts, or heatmap screenshots.
+              </p>
+            </div>
           </div>
 
           {/* Quick-load Sample Buttons */}
@@ -266,7 +272,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               <button
                 type="button"
                 onClick={() => handleLoadSample(SAMPLE_DATASETS[0])}
-                className="text-xs font-semibold px-2.5 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/70 rounded-md transition-colors cursor-pointer"
+                className="text-xs font-semibold px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900 border border-emerald-200/70 dark:border-emerald-800 rounded-md transition-colors cursor-pointer"
                 title="Scenario 1: Checkout Drop-off (25 rows, Sufficient data)"
               >
                 + Checkout CSV
@@ -274,7 +280,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               <button
                 type="button"
                 onClick={() => handleLoadSample(SAMPLE_DATASETS[1])}
-                className="text-xs font-semibold px-2.5 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200/70 rounded-md transition-colors cursor-pointer"
+                className="text-xs font-semibold px-2.5 py-1.5 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900 border border-amber-200/70 dark:border-amber-800 rounded-md transition-colors cursor-pointer"
                 title="Scenario 2: Onboarding Tickets (12 rows, Knowledge Gap)"
               >
                 + Onboarding Tickets
@@ -282,7 +288,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               <button
                 type="button"
                 onClick={() => handleLoadSample(SAMPLE_DATASETS[2])}
-                className="text-xs font-semibold px-2.5 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200/70 rounded-md transition-colors cursor-pointer"
+                className="text-xs font-semibold px-2.5 py-1.5 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 border border-indigo-200/70 dark:border-indigo-800 rounded-md transition-colors cursor-pointer"
                 title="Scenario 3: Interview Transcript"
               >
                 + Qualitative Transcript
@@ -296,7 +302,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
           {/* Option A: CSV / Excel / TXT File Upload */}
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-slate-200 hover:border-indigo-400 bg-slate-50/50 hover:bg-indigo-50/20 rounded-xl p-5 text-center cursor-pointer transition-all group"
+            className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 bg-slate-50/50 dark:bg-slate-800/40 hover:bg-indigo-50/20 dark:hover:bg-indigo-950/30 rounded-xl p-5 text-center cursor-pointer transition-all group"
           >
             <input
               type="file"
@@ -306,14 +312,17 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               accept=".csv,.tsv,.xlsx,.xls,.txt"
               className="hidden"
             />
-            <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
               <FileSpreadsheet className="w-5 h-5" />
             </div>
-            <h4 className="text-sm font-bold text-slate-800">Customer Feedback Dataset</h4>
-            <p className="text-xs text-slate-500 mt-1">
-              Upload <span className="font-semibold text-slate-700">CSV, XLSX, XLS</span> files. Support tickets, NPS comments, App Store reviews.
+            <div className="flex items-center justify-center gap-1.5">
+              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100">Customer Feedback Dataset</h4>
+              <HelpTooltip content="Structured customer ratings, reviews, and ticket exports in CSV/Excel format." />
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Upload <span className="font-semibold text-slate-700 dark:text-slate-300">CSV, XLSX, XLS</span> files. Support tickets, NPS comments, App Store reviews.
             </p>
-            <span className="inline-block mt-3 text-xs font-semibold text-indigo-600 group-hover:underline">
+            <span className="inline-block mt-3 text-xs font-semibold text-indigo-600 dark:text-indigo-400 group-hover:underline">
               Choose Files &rarr;
             </span>
           </div>
@@ -321,16 +330,19 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
           {/* Option B: Qualitative Interview Transcripts */}
           <div
             onClick={() => setShowPasteTranscriptModal(true)}
-            className="border-2 border-dashed border-slate-200 hover:border-sky-400 bg-slate-50/50 hover:bg-sky-50/20 rounded-xl p-5 text-center cursor-pointer transition-all group"
+            className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-sky-400 dark:hover:border-sky-500 bg-slate-50/50 dark:bg-slate-800/40 hover:bg-sky-50/20 dark:hover:bg-sky-950/30 rounded-xl p-5 text-center cursor-pointer transition-all group"
           >
-            <div className="w-10 h-10 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-950 text-sky-600 dark:text-sky-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
               <FileText className="w-5 h-5" />
             </div>
-            <h4 className="text-sm font-bold text-slate-800">Interview Transcript</h4>
-            <p className="text-xs text-slate-500 mt-1">
+            <div className="flex items-center justify-center gap-1.5">
+              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100">Interview Transcript</h4>
+              <HelpTooltip content="Unstructured qualitative 1-on-1 user interviews or customer support call notes." />
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Paste customer 1-on-1 calls, Zoom/Teams transcripts, or user testing session notes.
             </p>
-            <span className="inline-block mt-3 text-xs font-semibold text-sky-600 group-hover:underline">
+            <span className="inline-block mt-3 text-xs font-semibold text-sky-600 dark:text-sky-400 group-hover:underline">
               Paste Transcript &rarr;
             </span>
           </div>
@@ -338,7 +350,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
           {/* Option C: Heatmap Screenshot & Reports */}
           <div
             onClick={() => imageInputRef.current?.click()}
-            className="border-2 border-dashed border-slate-200 hover:border-amber-400 bg-slate-50/50 hover:bg-amber-50/20 rounded-xl p-5 text-center cursor-pointer transition-all group"
+            className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-amber-400 dark:hover:border-amber-500 bg-slate-50/50 dark:bg-slate-800/40 hover:bg-amber-50/20 dark:hover:bg-amber-950/30 rounded-xl p-5 text-center cursor-pointer transition-all group"
           >
             <input
               type="file"
@@ -347,21 +359,24 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               accept="image/*"
               className="hidden"
             />
-            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
               <ImageIcon className="w-5 h-5" />
             </div>
-            <h4 className="text-sm font-bold text-slate-800">Heatmap Screenshot</h4>
-            <p className="text-xs text-slate-500 mt-1">
+            <div className="flex items-center justify-center gap-1.5">
+              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100">Heatmap Screenshot</h4>
+              <HelpTooltip content="Visual evidence of drop-offs, missed clicks, and scroll depth friction points." />
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Upload actual click/scroll heatmap screenshots (Hotjar, CrazyEgg, Clarity).
             </p>
-            <span className="inline-block mt-3 text-xs font-semibold text-amber-600 group-hover:underline">
+            <span className="inline-block mt-3 text-xs font-semibold text-amber-600 dark:text-amber-400 group-hover:underline">
               Upload Heatmap &rarr;
             </span>
           </div>
         </div>
 
         {/* Website URL Guardrail Form (Scenario 6 Requirement) */}
-        <div className="mt-5 pt-5 border-t border-slate-100">
+        <div className="mt-5 pt-5 border-t border-slate-100 dark:border-slate-800">
           <form onSubmit={handleUrlSubmit} className="flex flex-col sm:flex-row items-center gap-2">
             <div className="relative flex-1 w-full">
               <Globe className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -370,20 +385,20 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
                 placeholder="Or test a website URL (e.g. https://apexstore.com/checkout)..."
-                className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-100"
+                className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-100"
               />
             </div>
             <button
               type="submit"
-              className="w-full sm:w-auto px-4 py-2 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors cursor-pointer"
+              className="w-full sm:w-auto px-4 py-2 text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg transition-colors cursor-pointer"
             >
               Check URL
             </button>
           </form>
 
           {showUrlGuardrail && (
-            <div className="mt-3 p-3.5 bg-amber-50 border border-amber-200/90 rounded-lg text-xs text-amber-900 flex items-start space-x-2.5">
-              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <div className="mt-3 p-3.5 bg-amber-50 dark:bg-amber-950/50 border border-amber-200/90 dark:border-amber-800 rounded-lg text-xs text-amber-900 dark:text-amber-200 flex items-start space-x-2.5">
+              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
               <div className="flex-1">
                 <span className="font-bold">Realism Guardrail: </span>
                 {urlGuardrailMessage}
@@ -391,7 +406,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               <button
                 type="button"
                 onClick={() => setShowUrlGuardrail(false)}
-                className="text-amber-700 font-bold hover:text-amber-900 cursor-pointer"
+                className="text-amber-700 dark:text-amber-300 font-bold hover:text-amber-900 cursor-pointer"
               >
                 &times;
               </button>
@@ -402,15 +417,15 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
 
       {/* Upload Error Alert */}
       {uploadError && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-sm text-rose-800 flex items-start space-x-2.5">
-          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-xl text-sm text-rose-800 dark:text-rose-200 flex items-start space-x-2.5">
+          <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="font-semibold">Upload or Parsing Error</p>
-            <p className="text-xs mt-0.5 text-rose-700">{uploadError}</p>
+            <p className="text-xs mt-0.5 text-rose-700 dark:text-rose-300">{uploadError}</p>
           </div>
           <button
             onClick={() => setUploadError(null)}
-            className="text-xs font-bold text-rose-700 cursor-pointer"
+            className="text-xs font-bold text-rose-700 dark:text-rose-300 hover:underline cursor-pointer"
           >
             Dismiss
           </button>
@@ -419,27 +434,27 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
 
       {/* Uploaded Evidence Sources Table */}
       {sources.length > 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200/90 shadow-xs overflow-hidden">
-          <div className="px-5 py-4 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden">
+          <div className="px-5 py-4 bg-slate-50/70 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-emerald-600" />
-              <h3 className="text-sm font-bold text-slate-900">
+              <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                 Uploaded Evidence Sources ({sources.length})
               </h3>
             </div>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
               Total Records:{' '}
-              <strong className="text-slate-800">
+              <strong className="text-slate-800 dark:text-slate-200">
                 {sources.reduce((sum, s) => sum + (s.recordCount || 0), 0)}
               </strong>
             </span>
           </div>
 
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-slate-100 dark:divide-slate-800">
             {sources.map((source) => (
               <div key={source.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start space-x-3">
-                  <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-9 h-9 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
                     {source.fileType === 'csv' || source.fileType === 'xlsx' ? (
                       <FileSpreadsheet className="w-5 h-5" />
                     ) : source.fileType === 'transcript' ? (
@@ -450,20 +465,20 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
                   </div>
                   <div>
                     <div className="flex items-center space-x-2">
-                      <h4 className="text-sm font-bold text-slate-900">{source.fileName}</h4>
-                      <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-slate-100 text-slate-600 rounded-md">
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white">{source.fileName}</h4>
+                      <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-md">
                         {source.fileType}
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-slate-500">
+                    <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-slate-500 dark:text-slate-400">
                       <span>{source.recordCount} records</span>
                       <span>&bull;</span>
                       <span>{(source.fileSize / 1024).toFixed(1)} KB</span>
                       {source.excludedCount > 0 && (
                         <>
                           <span>&bull;</span>
-                          <span className="text-amber-600 font-medium bg-amber-50 px-1.5 py-0.5 rounded-sm">
+                          <span className="text-amber-600 dark:text-amber-400 font-medium bg-amber-50 dark:bg-amber-950/60 px-1.5 py-0.5 rounded-sm">
                             {source.excludedCount} empty/blank rows excluded
                           </span>
                         </>
@@ -474,17 +489,17 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
                     {source.columnMappings && (
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         {source.columnMappings.feedbackTextCol && (
-                          <span className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-mono">
+                          <span className="text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-md font-mono border border-slate-200/50 dark:border-slate-700">
                             Text: <strong>{source.columnMappings.feedbackTextCol}</strong>
                           </span>
                         )}
                         {source.columnMappings.ratingCol && (
-                          <span className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-mono">
+                          <span className="text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-md font-mono border border-slate-200/50 dark:border-slate-700">
                             Rating: <strong>{source.columnMappings.ratingCol}</strong>
                           </span>
                         )}
                         {source.columnMappings.segmentCol && (
-                          <span className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-mono">
+                          <span className="text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-md font-mono border border-slate-200/50 dark:border-slate-700">
                             Segment: <strong>{source.columnMappings.segmentCol}</strong>
                           </span>
                         )}
@@ -498,7 +513,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
                   {source.columnMappings && (
                     <button
                       onClick={() => setActiveMappingSourceId(source.id)}
-                      className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center space-x-1.5 cursor-pointer"
+                      className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg flex items-center space-x-1.5 cursor-pointer"
                     >
                       <Sliders className="w-3.5 h-3.5" />
                       <span>Adjust Mapping</span>
@@ -507,7 +522,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
 
                   <button
                     onClick={() => setPreviewModalSource(source)}
-                    className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg cursor-pointer"
+                    className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer"
                     title="Preview extracted records"
                   >
                     <Eye className="w-4 h-4" />
@@ -515,7 +530,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
 
                   <button
                     onClick={() => handleRemoveSource(source.id)}
-                    className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg cursor-pointer"
+                    className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg cursor-pointer"
                     title="Remove this source"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -526,15 +541,15 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
           </div>
 
           {/* Bottom Action: Run Analysis */}
-          <div className="p-5 bg-slate-50/80 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="text-xs text-slate-500">
-              Ready to process <strong className="text-slate-800">{sources.length}</strong> sources with Gemini AI.
+          <div className="p-5 bg-slate-50/80 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+              Ready to process <strong className="text-slate-800 dark:text-slate-200">{sources.length}</strong> sources with Gemini AI.
             </div>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={onNextStep}
-                className="inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-all cursor-pointer"
+                className="inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold transition-all cursor-pointer"
               >
                 <span>Next Step</span>
                 <ArrowRight className="w-4 h-4" />
@@ -542,7 +557,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               <button
                 onClick={onRunAnalysis}
                 disabled={isAnalyzing}
-                className="inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs shadow-indigo-200 transition-all cursor-pointer disabled:opacity-60"
+                className="inline-flex items-center justify-center space-x-2 px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs shadow-indigo-200 dark:shadow-none transition-all cursor-pointer disabled:opacity-60"
               >
                 {isAnalyzing ? (
                   <>
@@ -561,10 +576,10 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
           </div>
         </div>
       ) : (
-        <div className="p-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200 text-slate-400">
-          <UploadCloud className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-          <p className="text-sm font-medium text-slate-600">No evidence files uploaded yet</p>
-          <p className="text-xs text-slate-400 mt-0.5">
+        <div className="p-8 text-center bg-slate-50 dark:bg-slate-900 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500">
+          <UploadCloud className="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-slate-600" />
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">No evidence files uploaded yet</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
             Upload at least one CSV, transcript, or heatmap file, or click a sample button above to begin.
           </p>
         </div>
@@ -573,15 +588,15 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
       {/* Adjust Column Mapping Modal */}
       {activeMappingSource && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Adjust Column Mappings</h3>
-                <p className="text-xs text-slate-500">{activeMappingSource.fileName}</p>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Adjust Column Mappings</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{activeMappingSource.fileName}</p>
               </div>
               <button
                 onClick={() => setActiveMappingSourceId(null)}
-                className="text-slate-400 hover:text-slate-700 font-bold"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-bold"
               >
                 &times;
               </button>
@@ -589,7 +604,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Customer Feedback / Comment Text Column:
                 </label>
                 <select
@@ -597,7 +612,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
                   onChange={(e) =>
                     handleUpdateMapping(activeMappingSource.id, 'feedbackTextCol', e.target.value)
                   }
-                  className="w-full p-2 border border-slate-300 rounded-lg bg-white"
+                  className="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                 >
                   <option value="">-- None --</option>
                   {activeMappingSource.detectedColumns?.map((col) => (
@@ -609,7 +624,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Rating Column (1-5 scale):
                 </label>
                 <select
@@ -617,7 +632,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
                   onChange={(e) =>
                     handleUpdateMapping(activeMappingSource.id, 'ratingCol', e.target.value)
                   }
-                  className="w-full p-2 border border-slate-300 rounded-lg bg-white"
+                  className="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                 >
                   <option value="">-- None --</option>
                   {activeMappingSource.detectedColumns?.map((col) => (
@@ -629,7 +644,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Customer Segment / Tier Column:
                 </label>
                 <select
@@ -637,7 +652,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
                   onChange={(e) =>
                     handleUpdateMapping(activeMappingSource.id, 'segmentCol', e.target.value)
                   }
-                  className="w-full p-2 border border-slate-300 rounded-lg bg-white"
+                  className="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                 >
                   <option value="">-- None --</option>
                   {activeMappingSource.detectedColumns?.map((col) => (
@@ -649,7 +664,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Record ID / Ticket # Column:
                 </label>
                 <select
@@ -657,7 +672,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
                   onChange={(e) =>
                     handleUpdateMapping(activeMappingSource.id, 'idCol', e.target.value)
                   }
-                  className="w-full p-2 border border-slate-300 rounded-lg bg-white"
+                  className="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                 >
                   <option value="">-- None --</option>
                   {activeMappingSource.detectedColumns?.map((col) => (
@@ -669,7 +684,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-100 flex justify-end">
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
               <button
                 onClick={() => setActiveMappingSourceId(null)}
                 className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg text-xs hover:bg-indigo-700 cursor-pointer"
@@ -684,17 +699,17 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
       {/* Preview Records Modal */}
       {previewModalSource && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl border border-slate-200 max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Source Records Preview</h3>
-                <p className="text-xs text-slate-500">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Source Records Preview</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   {previewModalSource.fileName} ({previewModalSource.recordCount} records)
                 </p>
               </div>
               <button
                 onClick={() => setPreviewModalSource(null)}
-                className="text-slate-400 hover:text-slate-700 font-bold"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-bold"
               >
                 &times;
               </button>
@@ -706,30 +721,30 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
                   <img
                     src={previewModalSource.imageDataUrl}
                     alt="Heatmap Preview"
-                    className="max-h-96 mx-auto rounded-lg border border-slate-200 shadow-xs"
+                    className="max-h-96 mx-auto rounded-lg border border-slate-200 dark:border-slate-700 shadow-xs"
                   />
                 </div>
               ) : previewModalSource.extractedContent ? (
-                <pre className="p-4 bg-slate-50 text-slate-800 rounded-lg text-xs font-mono whitespace-pre-wrap">
+                <pre className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg text-xs font-mono whitespace-pre-wrap border border-slate-200/60 dark:border-slate-700">
                   {previewModalSource.extractedContent}
                 </pre>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border border-slate-200">
-                    <thead className="bg-slate-100 text-slate-700 font-semibold">
+                  <table className="w-full text-left text-xs border border-slate-200 dark:border-slate-800">
+                    <thead className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
                       <tr>
                         {previewModalSource.detectedColumns?.map((col) => (
-                          <th key={col} className="p-2 border-b border-slate-200 whitespace-nowrap">
+                          <th key={col} className="p-2 border-b border-slate-200 dark:border-slate-700 whitespace-nowrap">
                             {col}
                           </th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                       {previewModalSource.previewRows?.slice(0, 10).map((row, rIdx) => (
-                        <tr key={rIdx} className="hover:bg-slate-50">
+                        <tr key={rIdx} className="hover:bg-slate-50 dark:hover:bg-slate-800/60">
                           {previewModalSource.detectedColumns?.map((col) => (
-                            <td key={col} className="p-2 border-b border-slate-100 max-w-xs truncate">
+                            <td key={col} className="p-2 border-b border-slate-100 dark:border-slate-800 max-w-xs truncate text-slate-800 dark:text-slate-200">
                               {String(row[col] ?? '')}
                             </td>
                           ))}
@@ -738,7 +753,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
                     </tbody>
                   </table>
                   {previewModalSource.previewRows && previewModalSource.previewRows.length > 10 && (
-                    <p className="text-xs text-slate-400 p-2 text-center">
+                    <p className="text-xs text-slate-400 dark:text-slate-500 p-2 text-center">
                       Showing first 10 of {previewModalSource.recordCount} rows...
                     </p>
                   )}
@@ -746,10 +761,10 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
               )}
             </div>
 
-            <div className="pt-3 border-t border-slate-100 flex justify-end">
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
               <button
                 onClick={() => setPreviewModalSource(null)}
-                className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg text-xs hover:bg-slate-200 cursor-pointer"
+                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold rounded-lg text-xs hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
               >
                 Close Preview
               </button>
@@ -761,15 +776,15 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
       {/* Paste Qualitative Transcript Modal */}
       {showPasteTranscriptModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center space-x-2">
-                <FileText className="w-5 h-5 text-sky-600" />
-                <h3 className="text-base font-bold text-slate-900">Add Customer Interview Transcript</h3>
+                <FileText className="w-5 h-5 text-sky-600 dark:text-sky-400" />
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Add Customer Interview Transcript</h3>
               </div>
               <button
                 onClick={() => setShowPasteTranscriptModal(false)}
-                className="text-slate-400 hover:text-slate-700 font-bold"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-bold"
               >
                 &times;
               </button>
@@ -777,7 +792,7 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
 
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Transcript Title / Participant Name
                 </label>
                 <input
@@ -785,12 +800,12 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
                   value={transcriptTitle}
                   onChange={(e) => setTranscriptTitle(e.target.value)}
                   placeholder="e.g. Interview with Sarah - Enterprise Lead"
-                  className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:border-sky-500"
+                  className="w-full text-xs p-2.5 border border-slate-300 dark:border-slate-700 rounded-lg focus:border-sky-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Transcript Text (Speaker labels & timestamps are preserved)
                 </label>
                 <textarea
@@ -798,15 +813,15 @@ export const EvidenceUploadStep: React.FC<EvidenceUploadStepProps> = ({
                   value={pastedTranscriptText}
                   onChange={(e) => setPastedTranscriptText(e.target.value)}
                   placeholder="[00:01:15] Alex: How would you describe your experience with the new menu?&#10;[00:01:25] Customer: It was confusing because my pinned shortcuts were removed..."
-                  className="w-full text-xs font-mono p-3 border border-slate-300 rounded-lg focus:border-sky-500 resize-none"
+                  className="w-full text-xs font-mono p-3 border border-slate-300 dark:border-slate-700 rounded-lg focus:border-sky-500 resize-none bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-100 flex justify-end space-x-2">
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end space-x-2">
               <button
                 onClick={() => setShowPasteTranscriptModal(false)}
-                className="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg"
+                className="px-4 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
               >
                 Cancel
               </button>

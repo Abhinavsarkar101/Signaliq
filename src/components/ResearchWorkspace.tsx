@@ -7,6 +7,7 @@ import { FeedbackHubView } from './FeedbackHubView';
 import { AnalysisStep } from './AnalysisStep';
 import { SurveyBuilderStep } from './SurveyBuilderStep';
 import { ReportStep } from './ReportStep';
+import { HelpTooltip } from './HelpTooltip';
 import {
   FileText,
   UploadCloud,
@@ -73,12 +74,12 @@ export const ResearchWorkspace: React.FC<ResearchWorkspaceProps> = ({
   };
 
   const steps = [
-    { id: 'brief', label: '1. Objective & AI Brief', icon: FileText },
-    { id: 'upload', label: '2. Evidence Upload', icon: UploadCloud, badge: project.sources?.length || 0 },
-    { id: 'feedback_hub', label: '3. VoC & Churn Intelligence', icon: Sparkles, badge: 'New' },
-    { id: 'analysis', label: '4. Analysis & Sufficiency', icon: BarChart3, badge: project.analysis ? '✓' : undefined },
-    { id: 'survey', label: '5. Targeted Survey', icon: ListTodo, badge: project.survey ? 'Ready' : undefined },
-    { id: 'report', label: '6. Consolidated Report', icon: CheckCircle2 },
+    { id: 'brief', label: '1. Objective & AI Brief', icon: FileText, tooltip: 'Define project goals and let AI generate a research architecture.' },
+    { id: 'upload', label: '2. Evidence Upload', icon: UploadCloud, badge: project.sources?.length || 0, tooltip: 'Upload customer feedback, transcripts, or data files for analysis.' },
+    { id: 'feedback_hub', label: '3. VoC & Churn Intelligence', icon: Sparkles, badge: 'New', tooltip: 'AI-powered clustering of feedback to identify top pain points and churn risks.' },
+    { id: 'analysis', label: '4. Analysis & Sufficiency', icon: BarChart3, badge: project.analysis ? '✓' : undefined, tooltip: 'Review AI analysis results and assess the sufficiency of collected evidence.' },
+    { id: 'survey', label: '5. Targeted Survey', icon: ListTodo, badge: project.survey ? 'Ready' : undefined, tooltip: 'Create and distribute targeted surveys to close data gaps.' },
+    { id: 'report', label: '6. Consolidated Report', icon: CheckCircle2, tooltip: 'Final consolidated research report based on all evidence and analysis.' },
   ];
 
   return (
@@ -129,6 +130,7 @@ export const ResearchWorkspace: React.FC<ResearchWorkspaceProps> = ({
               <button
                 key={step.id}
                 onClick={() => setActiveStep(step.id as WorkspaceStep)}
+                title={step.tooltip}
                 className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   isActive
                     ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-200 dark:shadow-none'
@@ -137,6 +139,7 @@ export const ResearchWorkspace: React.FC<ResearchWorkspaceProps> = ({
               >
                 <Icon className="w-4 h-4" />
                 <span>{step.label}</span>
+                {step.tooltip && <HelpTooltip content={step.tooltip} position="bottom" />}
                 {step.badge !== undefined && (
                   <span
                     className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${

@@ -44,7 +44,7 @@ export const SettingsView: React.FC = () => {
               className={`px-4 py-2.5 rounded-xl border text-xs font-bold flex items-center space-x-2 transition-all cursor-pointer ${
                 !isDark
                   ? 'bg-indigo-50 dark:bg-indigo-950/80 border-indigo-400 text-indigo-700 dark:text-indigo-300 shadow-xs ring-2 ring-indigo-500/20'
-                  : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750'
+                  : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
               }`}
             >
               <Sun className="w-4 h-4 text-amber-500" />
@@ -57,7 +57,7 @@ export const SettingsView: React.FC = () => {
               className={`px-4 py-2.5 rounded-xl border text-xs font-bold flex items-center space-x-2 transition-all cursor-pointer ${
                 isDark
                   ? 'bg-indigo-950/80 border-indigo-500 text-indigo-200 shadow-xs ring-2 ring-indigo-500/20'
-                  : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750'
+                  : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
               }`}
             >
               <Moon className="w-4 h-4 text-indigo-400" />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Project } from '../types';
 import { api } from '../lib/api';
+import { HelpTooltip } from './HelpTooltip';
 import {
   MessageSquare,
   Smartphone,
@@ -139,11 +140,11 @@ export const FeedbackHubView: React.FC<FeedbackHubViewProps> = ({ project, onUpd
       {/* Navigation Sub-tabs */}
       <div className="flex items-center space-x-2 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto">
         {[
-          { id: 'clusters', label: 'Quantified Pain Point Clusters', icon: Layers },
-          { id: 'quotes', label: 'Verified Customer Quotes & Sources', icon: MessageSquare },
-          { id: 'churn', label: '🚨 Churn Risk Signals', icon: ShieldAlert },
-          { id: 'roadmap', label: '🗺️ AI Roadmap Recommendations', icon: TrendingDown },
-          { id: 'ingest', label: '📥 Add Ingestion Sources', icon: PlusCircle },
+          { id: 'clusters', label: 'Quantified Pain Point Clusters', icon: Layers, tooltip: 'Quantified theme clusters extracted from feedback with impact severity.' },
+          { id: 'quotes', label: 'Verified Customer Quotes & Sources', icon: MessageSquare, tooltip: 'Verbatim customer quotes linked to specific source files and records.' },
+          { id: 'churn', label: '🚨 Churn Risk Signals', icon: ShieldAlert, tooltip: 'Urgent risk signals flagging immediate customer cancellation threats.' },
+          { id: 'roadmap', label: '🗺️ AI Roadmap Recommendations', icon: TrendingDown, tooltip: 'AI-recommended product backlog items prioritized by impact and effort.' },
+          { id: 'ingest', label: '📥 Add Ingestion Sources', icon: PlusCircle, tooltip: 'Add new feedback sources via app store IDs, support logs, or OCR screenshots.' },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -159,6 +160,7 @@ export const FeedbackHubView: React.FC<FeedbackHubViewProps> = ({ project, onUpd
             >
               <Icon className="w-3.5 h-3.5" />
               <span>{tab.label}</span>
+              {tab.tooltip && <HelpTooltip content={tab.tooltip} />}
             </button>
           );
         })}

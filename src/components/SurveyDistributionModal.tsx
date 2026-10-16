@@ -492,32 +492,32 @@ function doPost(e) {
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="relative bg-white rounded-2xl max-w-4xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="relative bg-white dark:bg-slate-900 rounded-2xl max-w-4xl w-full shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[92vh] text-slate-900 dark:text-slate-100">
         {/* Modal Top Header */}
-        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 text-white flex items-center justify-center shadow-xs">
               <Mail className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">
                 Bulk Survey Email Distribution
               </h2>
-              <p className="text-xs text-slate-500 truncate max-w-md">
-                Survey: <strong className="text-slate-700">{surveyTitle}</strong>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-md">
+                Survey: <strong className="text-slate-700 dark:text-slate-300">{surveyTitle}</strong>
               </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-3">
             {/* Live Quota Indicator Badge */}
-            <div className="hidden sm:flex items-center space-x-2 px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs">
+            <div className="hidden sm:flex items-center space-x-2 px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs">
               <span
                 className={`w-2 h-2 rounded-full ${
                   isConfigured ? 'bg-emerald-500' : 'bg-amber-400'
                 }`}
               ></span>
-              <span className="text-slate-600 font-medium">
+              <span className="text-slate-600 dark:text-slate-300 font-medium">
                 {isConfigured
                   ? `Daily Quota: ${remainingQuota !== null ? remainingQuota : 'Checking...'} left`
                   : 'Apps Script: Demo Mode'}
@@ -526,7 +526,7 @@ function doPost(e) {
 
             <button
               onClick={onClose}
-              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors"
+              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -534,13 +534,13 @@ function doPost(e) {
         </div>
 
         {/* Workflow Tabs */}
-        <div className="px-6 border-b border-slate-200 bg-white flex items-center space-x-1 overflow-x-auto text-xs font-semibold">
+        <div className="px-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center space-x-1 overflow-x-auto text-xs font-semibold">
           <button
             onClick={() => setActiveTab('recipients')}
             className={`py-3 px-3.5 border-b-2 transition-colors cursor-pointer flex items-center space-x-1.5 ${
               activeTab === 'recipients'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <UserCheck className="w-4 h-4" />
@@ -551,8 +551,8 @@ function doPost(e) {
             onClick={() => setActiveTab('compose')}
             className={`py-3 px-3.5 border-b-2 transition-colors cursor-pointer flex items-center space-x-1.5 ${
               activeTab === 'compose'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <Mail className="w-4 h-4" />
@@ -563,8 +563,8 @@ function doPost(e) {
             onClick={() => setActiveTab('confirm')}
             className={`py-3 px-3.5 border-b-2 transition-colors cursor-pointer flex items-center space-x-1.5 ${
               activeTab === 'confirm'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <Send className="w-4 h-4" />
@@ -575,8 +575,8 @@ function doPost(e) {
             onClick={() => setActiveTab('history')}
             className={`py-3 px-3.5 border-b-2 transition-colors cursor-pointer flex items-center space-x-1.5 ${
               activeTab === 'history'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <Clock className="w-4 h-4" />
@@ -587,8 +587,8 @@ function doPost(e) {
             onClick={() => setActiveTab('setup')}
             className={`py-3 px-3.5 border-b-2 transition-colors cursor-pointer flex items-center space-x-1.5 ${
               activeTab === 'setup'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <Code2 className="w-4 h-4" />
@@ -602,14 +602,14 @@ function doPost(e) {
           {activeTab === 'recipients' && (
             <div className="space-y-6">
               {/* Option Selector Toggle */}
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <div className="flex items-center space-x-2 bg-slate-100 p-1 rounded-xl">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center space-x-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
                   <button
                     onClick={() => setRecipientInputMode('manual')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                       recipientInputMode === 'manual'
-                        ? 'bg-white text-indigo-700 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 shadow-xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
                     Option A: Enter Manually
@@ -618,8 +618,8 @@ function doPost(e) {
                     onClick={() => setRecipientInputMode('csv')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                       recipientInputMode === 'csv'
-                        ? 'bg-white text-indigo-700 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 shadow-xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
                     Option B: Upload CSV File
@@ -630,14 +630,14 @@ function doPost(e) {
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={handleAddMyEmail}
-                    className="text-xs font-semibold px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-md transition-colors cursor-pointer"
+                    className="text-xs font-semibold px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/80 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800 rounded-md transition-colors cursor-pointer"
                     title="Add user's own email: Abhinavsarkar121@gmail.com"
                   >
                     + Add My Email
                   </button>
                   <button
                     onClick={handleAddSyntheticDemo}
-                    className="text-xs font-semibold px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md transition-colors cursor-pointer"
+                    className="text-xs font-semibold px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-md transition-colors cursor-pointer"
                   >
                     + 5 Demo Customers
                   </button>
@@ -648,7 +648,7 @@ function doPost(e) {
               {recipientInputMode === 'manual' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold text-slate-700">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
                       Enter Email Addresses (Comma, Semicolon, or Newline separated)
                     </label>
                     <button
@@ -665,9 +665,9 @@ function doPost(e) {
                     onChange={(e) => setManualText(e.target.value)}
                     onBlur={handleValidateManual}
                     placeholder="sarah@example.com, alex@company.com&#10;jordan@startup.io&#10;taylor@design.org"
-                    className="w-full text-xs font-mono p-3 border border-slate-300 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-100"
+                    className="w-full text-xs font-mono p-3 border border-slate-300 dark:border-slate-700 rounded-xl focus:border-indigo-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-1 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 outline-hidden"
                   />
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500">
                     Duplicates are automatically deduplicated. Invalid syntax will be detected and flagged below.
                   </p>
                 </div>
@@ -678,7 +678,7 @@ function doPost(e) {
                 <div className="space-y-4">
                   <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-slate-300 hover:border-indigo-400 bg-slate-50/60 hover:bg-indigo-50/20 rounded-2xl p-6 text-center cursor-pointer transition-all group"
+                    className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-indigo-50/20 dark:hover:bg-indigo-950/20 rounded-2xl p-6 text-center cursor-pointer transition-all group"
                   >
                     <input
                       type="file"
@@ -688,28 +688,28 @@ function doPost(e) {
                       className="hidden"
                     />
                     <Upload className="w-8 h-8 text-indigo-500 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                    <h4 className="text-sm font-bold text-slate-900">
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                       {csvFileName ? `File: ${csvFileName}` : 'Select Customer Recipient CSV'}
                     </h4>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                       Accepts single-column or multi-column customer files (.csv, .tsv).
                     </p>
-                    <span className="inline-block mt-2 text-xs font-semibold text-indigo-600 group-hover:underline">
+                    <span className="inline-block mt-2 text-xs font-semibold text-indigo-600 dark:text-indigo-400 group-hover:underline">
                       {csvFileName ? 'Change File' : 'Browse Files'}
                     </span>
                   </div>
 
                   {/* Column Mapping Selector (AC-03) */}
                   {csvColumns.length > 0 && (
-                    <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                       <div>
-                        <label className="block font-bold text-slate-700 mb-1">
+                        <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
                           Detected Email Column:
                         </label>
                         <select
                           value={selectedEmailCol}
                           onChange={(e) => handleColumnSelectionChange(e.target.value)}
-                          className="w-full p-2 border border-slate-300 rounded-lg bg-white font-medium"
+                          className="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
                         >
                           {csvColumns.map((col) => (
                             <option key={col} value={col}>
@@ -720,7 +720,7 @@ function doPost(e) {
                       </div>
 
                       <div>
-                        <label className="block font-bold text-slate-700 mb-1">
+                        <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
                           Optional Name Column (for personalization):
                         </label>
                         <select
@@ -731,7 +731,7 @@ function doPost(e) {
                               processCsvRows(csvRawRows, selectedEmailCol, e.target.value);
                             }
                           }}
-                          className="w-full p-2 border border-slate-300 rounded-lg bg-white font-medium"
+                          className="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
                         >
                           <option value="">-- None (Generic "Customer") --</option>
                           {csvColumns.map((col) => (
@@ -750,30 +750,30 @@ function doPost(e) {
               {recipients.length > 0 && (
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                      <span className="text-slate-400 font-medium">Total Rows</span>
-                      <p className="text-xl font-extrabold text-slate-900">{summary.totalRows}</p>
+                    <div className="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                      <span className="text-slate-400 dark:text-slate-400 font-medium">Total Rows</span>
+                      <p className="text-xl font-extrabold text-slate-900 dark:text-white">{summary.totalRows}</p>
                     </div>
 
-                    <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
-                      <span className="text-emerald-700 font-bold">Valid & Unique</span>
-                      <p className="text-xl font-extrabold text-emerald-800">{summary.validUniqueCount}</p>
+                    <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xl">
+                      <span className="text-emerald-700 dark:text-emerald-400 font-bold">Valid & Unique</span>
+                      <p className="text-xl font-extrabold text-emerald-800 dark:text-emerald-300">{summary.validUniqueCount}</p>
                     </div>
 
-                    <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl">
-                      <span className="text-rose-700 font-bold">Invalid Format</span>
-                      <p className="text-xl font-extrabold text-rose-800">{summary.invalidCount}</p>
+                    <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 rounded-xl">
+                      <span className="text-rose-700 dark:text-rose-400 font-bold">Invalid Format</span>
+                      <p className="text-xl font-extrabold text-rose-800 dark:text-rose-300">{summary.invalidCount}</p>
                     </div>
 
-                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
-                      <span className="text-amber-700 font-bold">Duplicates Removed</span>
-                      <p className="text-xl font-extrabold text-amber-800">{summary.duplicateCount}</p>
+                    <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl">
+                      <span className="text-amber-700 dark:text-amber-400 font-bold">Duplicates Removed</span>
+                      <p className="text-xl font-extrabold text-amber-800 dark:text-amber-300">{summary.duplicateCount}</p>
                     </div>
                   </div>
 
                   {previouslyEmailedWarning && (
-                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center space-x-2">
-                      <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl text-xs text-amber-900 dark:text-amber-200 flex items-center space-x-2">
+                      <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                       <span>
                         Notice: <strong>{summary.previouslyEmailedCount}</strong> recipient(s) were already included in a previous campaign for this survey.
                       </span>
@@ -781,13 +781,13 @@ function doPost(e) {
                   )}
 
                   {summary.invalidCount > 0 && (
-                    <div className="flex items-center justify-between text-xs p-2.5 bg-rose-50/60 border border-rose-200 rounded-xl">
-                      <span className="text-rose-800">
+                    <div className="flex items-center justify-between text-xs p-2.5 bg-rose-50/60 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-xl">
+                      <span className="text-rose-800 dark:text-rose-200">
                         {summary.invalidCount} malformed email(s) will be excluded from the sending batch.
                       </span>
                       <button
                         onClick={handleDownloadInvalidCsv}
-                        className="text-xs font-bold text-rose-700 hover:text-rose-900 flex items-center space-x-1 cursor-pointer"
+                        className="text-xs font-bold text-rose-700 dark:text-rose-400 hover:text-rose-900 dark:hover:text-rose-200 flex items-center space-x-1 cursor-pointer"
                       >
                         <Download className="w-3.5 h-3.5" />
                         <span>Download Invalid CSV Report</span>
@@ -796,22 +796,22 @@ function doPost(e) {
                   )}
 
                   {/* Recipient Preview Table */}
-                  <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs max-h-60 overflow-y-auto">
+                  <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-2xs max-h-60 overflow-y-auto">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-100 text-slate-700 sticky top-0">
+                      <thead className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 sticky top-0">
                         <tr>
-                          <th className="p-2.5 border-b w-8">Send</th>
-                          <th className="p-2.5 border-b">Email Address</th>
-                          <th className="p-2.5 border-b">Name</th>
-                          <th className="p-2.5 border-b">Status / Validation</th>
-                          <th className="p-2.5 border-b text-right">Action</th>
+                          <th className="p-2.5 border-b border-slate-200 dark:border-slate-700 w-8">Send</th>
+                          <th className="p-2.5 border-b border-slate-200 dark:border-slate-700">Email Address</th>
+                          <th className="p-2.5 border-b border-slate-200 dark:border-slate-700">Name</th>
+                          <th className="p-2.5 border-b border-slate-200 dark:border-slate-700">Status / Validation</th>
+                          <th className="p-2.5 border-b border-slate-200 dark:border-slate-700 text-right">Action</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                         {recipients.map((r) => {
                           const isEligible = r.isValid && !r.isDuplicate && !r.isOptedOut;
                           return (
-                            <tr key={r.id} className={!isEligible ? 'bg-slate-50/50 opacity-60' : 'hover:bg-slate-50'}>
+                            <tr key={r.id} className={!isEligible ? 'bg-slate-50/50 dark:bg-slate-800/40 opacity-60' : 'hover:bg-slate-50 dark:hover:bg-slate-800/60'}>
                               <td className="p-2.5">
                                 <input
                                   type="checkbox"
@@ -821,27 +821,27 @@ function doPost(e) {
                                   className="rounded-sm text-indigo-600"
                                 />
                               </td>
-                              <td className="p-2.5 font-mono text-slate-800">{r.email}</td>
-                              <td className="p-2.5 text-slate-600">{r.name || '-'}</td>
+                              <td className="p-2.5 font-mono text-slate-800 dark:text-slate-200">{r.email}</td>
+                              <td className="p-2.5 text-slate-600 dark:text-slate-400">{r.name || '-'}</td>
                               <td className="p-2.5">
                                 {!r.isValid ? (
-                                  <span className="px-2 py-0.5 bg-rose-100 text-rose-800 rounded-sm font-semibold text-[10px]">
+                                  <span className="px-2 py-0.5 bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 rounded-sm font-semibold text-[10px]">
                                     Invalid: {r.validationError}
                                   </span>
                                 ) : r.isDuplicate ? (
-                                  <span className="px-2 py-0.5 bg-amber-100 text-amber-800 rounded-sm font-semibold text-[10px]">
+                                  <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 rounded-sm font-semibold text-[10px]">
                                     Duplicate
                                   </span>
                                 ) : r.isOptedOut ? (
-                                  <span className="px-2 py-0.5 bg-slate-200 text-slate-700 rounded-sm font-semibold text-[10px]">
+                                  <span className="px-2 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-sm font-semibold text-[10px]">
                                     Opted Out
                                   </span>
                                 ) : r.isPreviouslyEmailed ? (
-                                  <span className="px-2 py-0.5 bg-sky-100 text-sky-800 rounded-sm font-semibold text-[10px]">
+                                  <span className="px-2 py-0.5 bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 rounded-sm font-semibold text-[10px]">
                                     Valid (Previously Emailed)
                                   </span>
                                 ) : (
-                                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-sm font-semibold text-[10px]">
+                                  <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 rounded-sm font-semibold text-[10px]">
                                     Valid
                                   </span>
                                 )}
@@ -886,49 +886,49 @@ function doPost(e) {
             <div className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Campaign Name</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Campaign Name</label>
                   <input
                     type="text"
                     value={campaignName}
                     onChange={(e) => setCampaignName(e.target.value)}
-                    className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:border-indigo-500"
+                    className="w-full text-xs p-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-lg focus:border-indigo-500 outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Email Subject <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
                     value={emailSubject}
                     onChange={(e) => setEmailSubject(e.target.value)}
-                    className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:border-indigo-500 font-medium"
+                    className="w-full text-xs p-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-lg focus:border-indigo-500 font-medium outline-hidden"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-bold text-slate-700">
-                    Email Body Content (Supports <code className="bg-slate-100 px-1 font-mono text-indigo-700">{'{{survey_url}}'}</code> & <code className="bg-slate-100 px-1 font-mono text-indigo-700">{'{{recipient_name}}'}</code>)
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Email Body Content (Supports <code className="bg-slate-100 dark:bg-slate-800 px-1 font-mono text-indigo-700 dark:text-indigo-400">{'{{survey_url}}'}</code> & <code className="bg-slate-100 dark:bg-slate-800 px-1 font-mono text-indigo-700 dark:text-indigo-400">{'{{recipient_name}}'}</code>)
                   </label>
                 </div>
                 <textarea
                   rows={7}
                   value={emailBody}
                   onChange={(e) => setEmailBody(e.target.value)}
-                  className="w-full text-xs font-sans p-3 border border-slate-300 rounded-xl focus:border-indigo-500"
+                  className="w-full text-xs font-sans p-3 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-xl focus:border-indigo-500 outline-hidden"
                 />
               </div>
 
               {/* Live Rendered Email Preview */}
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                   Live Recipient Email Preview
                 </span>
-                <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs text-xs space-y-2">
-                  <div className="border-b pb-2 text-slate-500 text-[11px] space-y-0.5">
+                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-700 shadow-2xs text-xs space-y-2">
+                  <div className="border-b border-slate-200 dark:border-slate-800 pb-2 text-slate-500 dark:text-slate-400 text-[11px] space-y-0.5">
                     <p>
                       <strong>From:</strong> {connectedAccount || 'Your Google Account (MailApp)'}
                     </p>
@@ -936,7 +936,7 @@ function doPost(e) {
                       <strong>Subject:</strong> {emailSubject}
                     </p>
                   </div>
-                  <div className="pt-2 text-slate-800 whitespace-pre-wrap leading-relaxed">
+                  <div className="pt-2 text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed">
                     {emailBody
                       .replace(/\{\{recipient_name\}\}/g, 'Sarah')
                       .replace(/\{\{survey_url\}\}/g, surveyUrl)}
@@ -945,10 +945,10 @@ function doPost(e) {
               </div>
 
               {/* Navigation */}
-              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   onClick={() => setActiveTab('recipients')}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer"
                 >
                   &larr; Back to Recipients
                 </button>
@@ -968,32 +968,32 @@ function doPost(e) {
           {activeTab === 'confirm' && (
             <div className="space-y-6">
               {/* Summary of send */}
-              <div className="p-5 bg-gradient-to-br from-indigo-50/70 via-white to-sky-50/50 rounded-2xl border border-indigo-100 space-y-4">
-                <div className="flex items-center space-x-2.5 text-indigo-900">
-                  <ShieldCheck className="w-5 h-5 text-indigo-600" />
+              <div className="p-5 bg-gradient-to-br from-indigo-50/70 via-white to-sky-50/50 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 rounded-2xl border border-indigo-100 dark:border-slate-700 space-y-4">
+                <div className="flex items-center space-x-2.5 text-indigo-900 dark:text-indigo-300">
+                  <ShieldCheck className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   <h3 className="text-sm font-bold">Campaign Dispatch Pre-Check</h3>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                  <div className="p-3 bg-white rounded-xl border border-slate-200">
-                    <span className="text-slate-400 font-medium">Recipients</span>
-                    <p className="text-lg font-bold text-slate-900">{validSelectedRecipients.length}</p>
+                  <div className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <span className="text-slate-400 dark:text-slate-400 font-medium">Recipients</span>
+                    <p className="text-lg font-bold text-slate-900 dark:text-white">{validSelectedRecipients.length}</p>
                   </div>
-                  <div className="p-3 bg-white rounded-xl border border-slate-200">
-                    <span className="text-slate-400 font-medium">Daily Quota Left</span>
-                    <p className="text-lg font-bold text-slate-900">
+                  <div className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <span className="text-slate-400 dark:text-slate-400 font-medium">Daily Quota Left</span>
+                    <p className="text-lg font-bold text-slate-900 dark:text-white">
                       {remainingQuota !== null ? remainingQuota : isConfigured ? 'Available' : '100 (Demo)'}
                     </p>
                   </div>
-                  <div className="p-3 bg-white rounded-xl border border-slate-200">
-                    <span className="text-slate-400 font-medium">Service Method</span>
-                    <p className="text-xs font-bold text-slate-900 truncate">
+                  <div className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <span className="text-slate-400 dark:text-slate-400 font-medium">Service Method</span>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
                       {isConfigured ? 'Apps Script MailApp' : 'Demo Simulation'}
                     </p>
                   </div>
-                  <div className="p-3 bg-white rounded-xl border border-slate-200">
-                    <span className="text-slate-400 font-medium">Sender Account</span>
-                    <p className="text-xs font-bold text-slate-900 truncate">
+                  <div className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <span className="text-slate-400 dark:text-slate-400 font-medium">Sender Account</span>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
                       {connectedAccount || 'Gmail Account'}
                     </p>
                   </div>
@@ -1044,8 +1044,8 @@ function doPost(e) {
               )}
 
               {/* Explicit Confirmation Checkbox (AC-09) */}
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-                <label className="flex items-start space-x-3 text-xs font-semibold text-slate-800 cursor-pointer">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl space-y-3">
+                <label className="flex items-start space-x-3 text-xs font-semibold text-slate-800 dark:text-slate-200 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={sendConfirmed}
@@ -1054,16 +1054,16 @@ function doPost(e) {
                   />
                   <span>
                     I confirm that I want to send this survey invitation to{' '}
-                    <strong>{validSelectedRecipients.length}</strong> selected recipient(s). All emails will include direct links to complete the survey.
+                    <strong className="text-slate-900 dark:text-white">{validSelectedRecipients.length}</strong> selected recipient(s). All emails will include direct links to complete the survey.
                   </span>
                 </label>
               </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   onClick={() => setActiveTab('compose')}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer"
                 >
                   &larr; Back to Content
                 </button>
@@ -1072,7 +1072,7 @@ function doPost(e) {
                   <button
                     onClick={() => handleSendCampaign(true)}
                     disabled={isSending || validSelectedRecipients.length === 0}
-                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer"
+                    className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold cursor-pointer border border-slate-200 dark:border-slate-700"
                   >
                     Send in Simulation Mode
                   </button>
@@ -1094,20 +1094,20 @@ function doPost(e) {
           {activeTab === 'history' && (
             <div className="space-y-5">
               {latestCampaign && (
-                <div className="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-3">
-                  <div className="flex items-center space-x-2 text-emerald-900">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                <div className="p-5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl space-y-3">
+                  <div className="flex items-center space-x-2 text-emerald-900 dark:text-emerald-200">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                     <h3 className="text-sm font-bold">Campaign Dispatched Successfully</h3>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                     <div>
-                      <span className="text-slate-500 font-medium">Recipients Accepted:</span>
-                      <p className="text-base font-bold text-slate-900">{latestCampaign.sentCount}</p>
+                      <span className="text-slate-500 dark:text-slate-400 font-medium">Recipients Accepted:</span>
+                      <p className="text-base font-bold text-slate-900 dark:text-white">{latestCampaign.sentCount}</p>
                     </div>
                     <div>
-                      <span className="text-slate-500 font-medium">Failed / Skipped:</span>
-                      <p className="text-base font-bold text-slate-900">{latestCampaign.failedCount}</p>
+                      <span className="text-slate-500 dark:text-slate-400 font-medium">Failed / Skipped:</span>
+                      <p className="text-base font-bold text-slate-900 dark:text-white">{latestCampaign.failedCount}</p>
                     </div>
                     <div>
                       <span className="text-slate-500 font-medium">Remaining Quota:</span>
@@ -1155,14 +1155,14 @@ function doPost(e) {
                 </div>
 
                 {campaigns.length > 0 ? (
-                  <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden bg-white">
+                  <div className="divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900">
                     {campaigns.map((camp) => (
                       <div key={camp.id} className="p-4 space-y-2 text-xs">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
-                            <span className="font-bold text-slate-900">{camp.name}</span>
+                            <span className="font-bold text-slate-900 dark:text-white">{camp.name}</span>
                             {camp.isSimulation && (
-                              <span className="px-1.5 py-0.2 bg-slate-100 text-slate-600 rounded-sm text-[10px]">
+                              <span className="px-1.5 py-0.2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-sm text-[10px]">
                                 Simulated
                               </span>
                             )}
@@ -1173,30 +1173,30 @@ function doPost(e) {
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-600">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-600 dark:text-slate-400">
                           <div>
-                            Sent: <strong className="text-slate-900">{camp.sentCount}</strong>
+                            Sent: <strong className="text-slate-900 dark:text-white">{camp.sentCount}</strong>
                           </div>
                           <div>
-                            Failed: <strong className="text-slate-900">{camp.failedCount}</strong>
+                            Failed: <strong className="text-slate-900 dark:text-white">{camp.failedCount}</strong>
                           </div>
                           <div>
                             Survey Responses:{' '}
-                            <strong className="text-emerald-700">{camp.responseCount || 0}</strong>
+                            <strong className="text-emerald-700 dark:text-emerald-400">{camp.responseCount || 0}</strong>
                           </div>
                           <div>
                             Response Rate:{' '}
-                            <strong className="text-indigo-700">{camp.responseRate || 0}%</strong>
+                            <strong className="text-indigo-700 dark:text-indigo-400">{camp.responseRate || 0}%</strong>
                           </div>
                         </div>
 
-                        <div className="pt-2 flex items-center justify-between border-t border-slate-100">
+                        <div className="pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
                           <span className="text-slate-400 font-mono text-[11px]">ID: {camp.id}</span>
                           <a
                             href={`/api/email/campaigns/${camp.id}/export`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-bold text-indigo-600 hover:underline flex items-center space-x-1"
+                            className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center space-x-1"
                           >
                             <Download className="w-3.5 h-3.5" />
                             <span>Export Results CSV</span>
@@ -1206,7 +1206,7 @@ function doPost(e) {
                     ))}
                   </div>
                 ) : (
-                  <div className="p-6 text-center text-slate-400 text-xs bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                  <div className="p-6 text-center text-slate-400 text-xs bg-slate-50 dark:bg-slate-850 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
                     No email campaigns have been sent for this survey yet.
                   </div>
                 )}
@@ -1217,9 +1217,9 @@ function doPost(e) {
           {/* TAB 5: GOOGLE APPS SCRIPT SETUP & INSTRUCTIONS */}
           {activeTab === 'setup' && (
             <div className="space-y-5">
-              <div className="p-4 bg-sky-50 border border-sky-200 rounded-2xl text-xs text-sky-950 space-y-2">
-                <div className="flex items-center space-x-2 font-bold text-sky-900">
-                  <Code2 className="w-4 h-4 text-sky-600" />
+              <div className="p-4 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-900/60 rounded-2xl text-xs text-sky-950 dark:text-sky-200 space-y-2">
+                <div className="flex items-center space-x-2 font-bold text-sky-900 dark:text-sky-300">
+                  <Code2 className="w-4 h-4 text-sky-600 dark:text-sky-400" />
                   <span>Free Gmail Bulk Email via Google Apps Script (MailApp)</span>
                 </div>
                 <p className="leading-relaxed">
@@ -1228,8 +1228,8 @@ function doPost(e) {
               </div>
 
               {/* Endpoint Input Box */}
-              <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-3">
-                <label className="block text-xs font-bold text-slate-800">
+              <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-3">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
                   Your Google Apps Script Web App URL
                 </label>
                 <div className="flex items-center space-x-2">
@@ -1238,7 +1238,7 @@ function doPost(e) {
                     value={appsScriptUrl}
                     onChange={(e) => setAppsScriptUrl(e.target.value)}
                     placeholder="https://script.google.com/macros/s/.../exec"
-                    className="flex-1 text-xs font-mono p-2.5 border border-slate-300 rounded-lg focus:border-indigo-500"
+                    className="flex-1 text-xs font-mono p-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg focus:border-indigo-500"
                   />
                   <button
                     onClick={handleSaveAppsScriptUrl}
@@ -1249,7 +1249,7 @@ function doPost(e) {
                   </button>
                   <button
                     onClick={loadEmailConfigAndQuota}
-                    className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg cursor-pointer"
+                    className="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg cursor-pointer border border-slate-200 dark:border-slate-700"
                     title="Test Connection & Refresh Quota"
                   >
                     <RefreshCw className={`w-4 h-4 ${isCheckingQuota ? 'animate-spin' : ''}`} />
@@ -1257,14 +1257,14 @@ function doPost(e) {
                 </div>
 
                 {isConfigured && remainingQuota !== null && (
-                  <p className="text-xs text-emerald-700 font-semibold flex items-center space-x-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <p className="text-xs text-emerald-700 dark:text-emerald-400 font-semibold flex items-center space-x-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     <span>Connected to {connectedAccount || 'Google Account'}. Daily quota: {remainingQuota} emails remaining.</span>
                   </p>
                 )}
 
                 {quotaError && (
-                  <p className="text-xs text-rose-700 font-medium flex items-center space-x-1.5">
+                  <p className="text-xs text-rose-700 dark:text-rose-400 font-medium flex items-center space-x-1.5">
                     <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
                     <span>{quotaError}</span>
                   </p>
@@ -1273,17 +1273,17 @@ function doPost(e) {
 
               {/* Step-by-Step 3-Minute Deployment Instructions */}
               <div className="space-y-3 text-xs">
-                <h4 className="font-bold text-slate-800 uppercase tracking-wide">
+                <h4 className="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
                   Step-by-Step 3-Minute Deployment Guide
                 </h4>
-                <ol className="space-y-2 list-decimal list-inside text-slate-600">
+                <ol className="space-y-2 list-decimal list-inside text-slate-600 dark:text-slate-400">
                   <li>
                     Open{' '}
                     <a
                       href="https://script.google.com"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-bold text-indigo-600 underline inline-flex items-center space-x-0.5"
+                      className="font-bold text-indigo-600 dark:text-indigo-400 underline inline-flex items-center space-x-0.5"
                     >
                       <span>script.google.com</span>
                       <ExternalLink className="w-3 h-3" />
@@ -1291,7 +1291,7 @@ function doPost(e) {
                     and click <strong>New Project</strong>.
                   </li>
                   <li>
-                    Replace the default code in <code className="bg-slate-100 px-1 font-mono">Code.gs</code> with the snippet below.
+                    Replace the default code in <code className="bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1 font-mono rounded-sm">Code.gs</code> with the snippet below.
                   </li>
                   <li>
                     Click <strong>Deploy &rarr; New deployment</strong>.
@@ -1307,7 +1307,7 @@ function doPost(e) {
                     </ul>
                   </li>
                   <li>
-                    Click <strong>Deploy</strong>, grant permission to your own script, and copy the <strong>Web App URL</strong> ending in <code className="bg-slate-100 px-1 font-mono">/exec</code>.
+                    Click <strong>Deploy</strong>, grant permission to your own script, and copy the <strong>Web App URL</strong> ending in <code className="bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1 font-mono rounded-sm">/exec</code>.
                   </li>
                   <li>
                     Paste the URL in the box above and click <strong>Save & Verify</strong>!
@@ -1318,20 +1318,20 @@ function doPost(e) {
               {/* Copyable Code.gs Script */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-700 font-mono">Code.gs (Ready to Paste)</span>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 font-mono">Code.gs (Ready to Paste)</span>
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(appsScriptTemplate);
                       setCopiedScript(true);
                       setTimeout(() => setCopiedScript(false), 2000);
                     }}
-                    className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md text-xs font-semibold flex items-center space-x-1 cursor-pointer"
+                    className="px-3 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-md text-xs font-semibold flex items-center space-x-1 cursor-pointer border border-slate-200 dark:border-slate-700"
                   >
                     {copiedScript ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copiedScript ? 'Copied Script!' : 'Copy Code.gs'}</span>
                   </button>
                 </div>
-                <pre className="p-4 bg-slate-900 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto max-h-56 leading-relaxed">
+                <pre className="p-4 bg-slate-900 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto max-h-56 leading-relaxed border border-slate-800">
                   {appsScriptTemplate}
                 </pre>
               </div>
@@ -1340,14 +1340,14 @@ function doPost(e) {
         </div>
 
         {/* Modal Bottom Footer */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs">
+        <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
           <div className="flex items-center space-x-2">
-            <span className="text-slate-400">Shareable URL:</span>
+            <span className="text-slate-400 dark:text-slate-400">Shareable URL:</span>
             <input
               type="text"
               readOnly
               value={surveyUrl}
-              className="bg-white border border-slate-200 px-2 py-1 rounded text-slate-600 font-mono text-[11px] max-w-xs truncate select-all"
+              className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded text-slate-600 dark:text-slate-300 font-mono text-[11px] max-w-xs truncate select-all"
             />
             <button
               onClick={() => {
@@ -1355,7 +1355,7 @@ function doPost(e) {
                 setCopiedUrl(true);
                 setTimeout(() => setCopiedUrl(false), 2000);
               }}
-              className="p-1 text-slate-500 hover:text-slate-800"
+              className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer"
               title="Copy URL"
             >
               {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
@@ -1364,7 +1364,7 @@ function doPost(e) {
 
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg cursor-pointer"
+            className="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold rounded-lg cursor-pointer border border-slate-200 dark:border-slate-700"
           >
             Close
           </button>
