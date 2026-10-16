@@ -231,10 +231,11 @@ export default function App() {
     );
   }
 
-  // If not logged in and trying to access anything other than landing, redirect to landing
-  if (!isLoggedIn) {
+  const protectedViews = ['dashboard', 'projects', 'workspace', 'surveys', 'reports', 'settings', 'feedback', 'submissions'];
+  
+  if (!isLoggedIn && protectedViews.includes(currentView)) {
     setCurrentView('landing');
-    return null; // Will trigger re-render with landing view
+    return null;
   }
 
   const handleLogout = () => {
