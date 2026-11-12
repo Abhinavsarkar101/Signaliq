@@ -558,6 +558,10 @@ export const api = {
     businessContext?: string;
     desiredOutcome?: string;
     category?: string;
+    userClarifications?: Record<string, string>;
+    limitationResponses?: Record<string, string>;
+    userNotes?: string;
+    existingBrief?: ResearchBrief;
   }): Promise<ResearchBrief> {
     const data = await safeFetch('/api/ai/generate-brief', {
       method: 'POST',

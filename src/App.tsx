@@ -40,8 +40,21 @@ export default function App() {
 
   const [directRespondentSurvey, setDirectRespondentSurvey] = useState<Survey | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
-  const [userProfile, setUserProfile] = useState<Record<string, string>>({});
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(() => {
+    return localStorage.getItem('signaliq_onboarding_completed') === 'true';
+  });
+  const [userProfile, setUserProfile] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem('signaliq_user_profile');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+  const [isFullPlatformMode, setIsFullPlatformMode] = useState<boolean>(() => {
+    return localStorage.getItem('signaliq_full_mode') === 'true';
+  });
+  const [isEditingOnboardingModalOpen, setIsEditingOnboardingModalOpen] = useState(false);
 
   const loadData = async () => {
     setIsLoading(true);
@@ -240,17 +253,39 @@ export default function App() {
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setHasCompletedOnboarding(false);
     setCurrentView('landing');
+  };
+
+  const handleCompleteOnboarding = (answers: Record<string, string>) => {
+    setUserProfile(answers);
+    setHasCompletedOnboarding(true);
+    const fullMode = answers.viewMode?.includes('Full Platform View') || false;
+    setIsFullPlatformMode(fullMode);
+    try {
+      localStorage.setItem('signaliq_user_profile', JSON.stringify(answers));
+      localStorage.setItem('signaliq_onboarding_completed', 'true');
+      localStorage.setItem('signaliq_full_mode', String(fullMode));
+    } catch (e) {
+      console.warn('Could not persist to localStorage:', e);
+    }
+  };
+
+  const handleToggleFullPlatformMode = () => {
+    setIsFullPlatformMode((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('signaliq_full_mode', String(next));
+      } catch (e) {
+        console.warn(e);
+      }
+      return next;
+    });
   };
 
   if (isLoggedIn && !hasCompletedOnboarding) {
     return (
       <OnboardingQuestions 
-        onComplete={(answers) => {
-          setUserProfile(answers);
-          setHasCompletedOnboarding(true);
-        }} 
+        onComplete={handleCompleteOnboarding} 
       />
     );
   }
@@ -270,8 +305,24 @@ export default function App() {
         activeProjectName={activeProject?.name}
         hasActiveProject={Boolean(activeProject)}
         onLogout={handleLogout}
+        userProfile={userProfile}
+        isFullPlatformMode={isFullPlatformMode}
+        onToggleFullPlatformMode={handleToggleFullPlatformMode}
+        onOpenOnboardingModal={() => setIsEditingOnboardingModalOpen(true)}
       />
-...
+
+      {/* Re-configurable Onboarding / Persona Modal */}
+      {isEditingOnboardingModalOpen && (
+        <OnboardingQuestions
+          isEditing={true}
+          initialAnswers={userProfile}
+          onCancel={() => setIsEditingOnboardingModalOpen(false)}
+          onComplete={(answers) => {
+            handleCompleteOnboarding(answers);
+            setIsEditingOnboardingModalOpen(false);
+          }}
+        />
+      )}
 
       {/* Global Error Banner if any */}
       {errorMessage && (
@@ -299,6 +350,10 @@ export default function App() {
             onOpenProject={handleOpenProject}
             onLoadScenario={handleLaunchScenario}
             onNavigate={(view) => setCurrentView(view)}
+            userProfile={userProfile}
+            isFullPlatformMode={isFullPlatformMode}
+            onToggleFullPlatformMode={handleToggleFullPlatformMode}
+            onOpenOnboardingModal={() => setIsEditingOnboardingModalOpen(true)}
           />
         )}
 

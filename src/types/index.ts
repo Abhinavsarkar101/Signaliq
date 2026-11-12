@@ -29,6 +29,8 @@ export interface ResearchBrief {
   recommendedFocus: string;
   approved: boolean;
   userNotes?: string;
+  clarificationAnswers?: Record<string, string>;
+  limitationResponses?: Record<string, string>;
 }
 
 export interface EvidenceSource {

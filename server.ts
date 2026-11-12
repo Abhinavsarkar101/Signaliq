@@ -1637,16 +1637,50 @@ app.post('/api/ai/generate-brief', async (req, res) => {
 
 // POST /api/ai/research-brief
 app.post('/api/ai/research-brief', async (req, res) => {
-  const { name, objective, productName, customerSegment, businessContext, desiredOutcome, category } = req.body;
+  const {
+    name,
+    objective,
+    productName,
+    customerSegment,
+    businessContext,
+    desiredOutcome,
+    category,
+    userClarifications,
+    limitationResponses,
+    userNotes,
+    existingBrief,
+  } = req.body;
 
   if (!objective || !objective.trim()) {
     return res.status(400).json({ success: false, error: 'Research objective is required' });
   }
 
+  let userFeedbackContext = '';
+  if (userClarifications && Object.keys(userClarifications).length > 0) {
+    userFeedbackContext += `\n\nUser Answers to Clarification Questions:\n` +
+      Object.entries(userClarifications)
+        .filter(([_, ans]) => Boolean(ans && String(ans).trim()))
+        .map(([q, ans]) => `- Question: "${q}" -> User Answer: "${ans}"`)
+        .join('\n');
+  }
+  if (limitationResponses && Object.keys(limitationResponses).length > 0) {
+    userFeedbackContext += `\n\nUser Mitigations & Decisions on Identified Limitations/Blindspots:\n` +
+      Object.entries(limitationResponses)
+        .filter(([_, resp]) => Boolean(resp && String(resp).trim()))
+        .map(([lim, resp]) => `- Identified Limitation: "${lim}" -> User Decision/Mitigation: "${resp}"`)
+        .join('\n');
+  }
+  if (userNotes && String(userNotes).trim()) {
+    userFeedbackContext += `\n\nAdditional User Research Notes & Exclusions:\n"${String(userNotes).trim()}"`;
+  }
+  if (existingBrief) {
+    userFeedbackContext += `\n\nPrevious Research Brief Context (Refining based on user answers):\n- Primary Question was: ${existingBrief.primaryQuestion}\n- Current Sub-questions: ${JSON.stringify(existingBrief.subQuestions || [])}\n- Previous Focus: ${existingBrief.recommendedFocus || ''}`;
+  }
+
   const prompt = `You are an expert AI product research architect for SignalIQ.
 Analyze the following research project request and produce a structured, thorough Research Brief.
 Do NOT fabricate customer numbers or replace the user's business question with an unrelated topic.
-If there are ambiguities or unknown variables, explicitly list them under limitationsAndAmbiguities and provide relevant clarificationQuestions.
+${userFeedbackContext ? `\nCRITICAL REFINEMENT INSTRUCTION:\nThe user has provided specific answers to your previous questions and limitation blindspots below. You MUST directly incorporate their decisions, domain knowledge, and scope limitations into the updated Research Brief. Update primaryQuestion, subQuestions, targetSegment, and recommendedFocus to strictly align with the user's answers. If a limitation was resolved or scoped out by the user, remove or update it.` : 'If there are ambiguities or unknown variables, explicitly list them under limitationsAndAmbiguities and provide relevant clarificationQuestions.'}
 
 Project Name: ${name || 'Untitled Research'}
 Research Objective: ${objective}
@@ -1655,18 +1689,19 @@ Target Customer Segment: ${customerSegment || 'General customer base'}
 Business Context: ${businessContext || 'None provided'}
 Desired Outcome: ${desiredOutcome || 'Unspecified'}
 Category: ${category || 'general'}
+${userFeedbackContext}
 
 Respond ONLY with a valid JSON object matching this schema:
 {
-  "primaryQuestion": "The core question formulated clearly",
+  "primaryQuestion": "The core question formulated clearly, incorporating user answers",
   "subQuestions": ["3-4 specific, measurable sub-questions this research must answer"],
-  "targetSegment": "Specific target customer profile or segment",
+  "targetSegment": "Specific target customer profile or segment refined by user input",
   "requiredInfo": ["3-5 specific data points or information types needed to answer the question"],
   "signalsToInvestigate": ["3-5 customer signals, friction points, or metrics to look for"],
   "potentialSources": ["Recommended evidence sources such as support tickets, interview transcripts, churn logs, or heatmaps"],
-  "limitationsAndAmbiguities": ["Known limitations, missing context, or assumptions in the current objective"],
-  "clarificationQuestions": ["1-2 clarifying questions for the user if any context is ambiguous"],
-  "recommendedFocus": "A 1-2 sentence recommendation on what to prioritize in the upcoming analysis"
+  "limitationsAndAmbiguities": ["Remaining unaddressed limitations or caveats (omit any resolved by user answers)"],
+  "clarificationQuestions": ["Follow-up questions only if critical ambiguities still remain, otherwise empty array []"],
+  "recommendedFocus": "A 1-2 sentence recommendation on what to prioritize in the upcoming analysis based on user decisions"
 }`;
 
   try {
@@ -1676,6 +1711,9 @@ Respond ONLY with a valid JSON object matching this schema:
 
     const brief = cleanAndParseJson(response.text || '{}');
     brief.approved = false;
+    if (userNotes) brief.userNotes = userNotes;
+    if (userClarifications) brief.clarificationAnswers = userClarifications;
+    if (limitationResponses) brief.limitationResponses = limitationResponses;
     res.json({ success: true, brief });
   } catch (err: any) {
     console.error('Gemini brief generation error:', err);
@@ -1766,6 +1804,9 @@ Approved Brief Context:
 - Sub-questions: ${JSON.stringify(brief?.subQuestions || [])}
 - Target Segment: ${brief?.targetSegment || 'All users'}
 - Limitations noted: ${JSON.stringify(brief?.limitationsAndAmbiguities || [])}
+- User Answers to Questions: ${JSON.stringify(brief?.clarificationAnswers || {})}
+- User Mitigations to Blindspots: ${JSON.stringify(brief?.limitationResponses || {})}
+- User Additional Directives: ${brief?.userNotes || 'None'}
 
 Evidence Sources Data:
 ${JSON.stringify(sourceSummaries, null, 2)}
